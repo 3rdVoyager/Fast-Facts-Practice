@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Fast Facts Simulator — Science Olympiad (Div A)</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <!--
+      Fast Facts Simulator
+      Simple, beginner-friendly layout. Controls at the top, main area split left/right.
+      Files: index.html, style.css, app.js, data.json
+    -->
+
+    <header class="app-header">
+      <div class="brand">Fast Facts Simulator</div>
+      <div class="header-right">
+        <!-- Filters moved into header; they sit left of the theme toggle and the whole block is aligned right -->
+        <div class="filters-bar">
+          <div class="controls">
+            <div class="dropdown" id="categoryDropdown">
+              <button id="categoryToggle" class="dropdown-toggle" aria-expanded="false">Random Category ▾</button>
+              <div id="categoryMenu" class="dropdown-menu" aria-hidden="true">
+                <div class="dropdown-header">Practice Area</div>
+                <ul id="categoryList" class="dropdown-list">
+                  <!-- items populated dynamically -->
+                </ul>
+              </div>
+            </div>
+            <div class="dropdown" id="timerDropdown">
+              <button id="timerToggle" class="dropdown-toggle" aria-expanded="false">30s ▾</button>
+              <div id="timerMenu" class="dropdown-menu" aria-hidden="true">
+                <div class="dropdown-header">Timer</div>
+                <ul id="timerList" class="dropdown-list">
+                  <!-- populated dynamically -->
+                </ul>
+              </div>
+            </div>
+            <div class="dropdown" id="modeDropdown">
+              <button id="modeToggle" class="dropdown-toggle" aria-expanded="false">Mode: Easy ▾</button>
+              <div id="modeMenu" class="dropdown-menu" aria-hidden="true">
+                <div class="dropdown-header">Mode</div>
+                <ul id="modeList" class="dropdown-list">
+                  <!-- populated dynamically -->
+                </ul>
+              </div>
+            </div>
+            <button id="startBtn">Next Round</button>
+          </div>
+        </div>
+        <!-- Theme toggle placed upper-right -->
+        <button id="themeToggle" class="theme-toggle" aria-label="Toggle dark/light theme">🌙</button>
+      </div>
+    </header>
+
+    <main class="main">
+      <section class="left">
+        <h2 class="label">Category</h2>
+        <div id="categoryDisplay" class="pill">—</div>
+
+        <div class="timer-row">
+          <div id="timeText">Time Remaining: —</div>
+          <div id="timePct">0%</div>
+        </div>
+        <div class="progress">
+          <div id="progressBar" class="progress-inner"></div>
+        </div>
+
+        <input id="answerInput" class="answer-input" placeholder="Type your answer..." autocomplete="off" />
+
+        <!-- Action buttons placed directly under the input as requested -->
+        <div class="actions">
+          <button id="hintBtn">Hint</button>
+          <button id="revealBtn">Reveal</button>
+        </div>
+
+        <div class="bottom-row">
+          <div id="feedback" class="feedback">&nbsp;</div>
+        </div>
+      </section>
+
+      <section class="right">
+        <h2 class="label">Target Letter</h2>
+        <div id="letterDisplay" class="big-letter">?</div>
+
+        <div id="exampleArea" class="example hidden">
+          <div class="example-title">Example Answer</div>
+          <div id="exampleAnswer" class="example-answer"></div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="app-footer">Simple Fast Facts practice — local, no server required (use a simple HTTP server for full functionality)</footer>
+
+    <script src="app.js"></script>
+  </body>
+</html>

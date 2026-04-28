@@ -1,0 +1,189 @@
+/* style.css - Simple, readable styles for Fast Facts Simulator
+   Keep styling minimal and well-commented for beginners. */
+
+:root{
+  /* Dark theme (default) */
+  --bg: #021826; /* page background (deep midnight blue) */
+  --panel: #05304a; /* panel surface (blue) */
+  --muted: #9fbfd6; /* muted text (bluish) */
+  --accent: #3bb5ff; /* primary highlight (blue) */
+  --success: #2ec4ff; /* success/example color (blue) */
+  --danger: #ff6b6b;
+  --pill: #043452; /* pill/select background (bluer) */
+  /* UI surface variables for easier theming */
+  --header-start: #042b44; /* header background (navy blue) */
+  --header-end: #03283d;
+  --filters-bg: #032b44; /* filters bar background */
+  --panel-start: #05304a; /* panel background (blue) */
+  --panel-end: #043042;
+  --panel-border: rgba(255,255,255,0.14);
+  --progress-bg: #044d73;
+  --input-bg: #04374b;
+  --button-bg: #1162b0; /* blue button background */
+  --button-bg-hover: #0b4f8e;
+  --button-text: #e6f8ff;
+  --control-bg: #1162b0;
+  --control-bg-hover: #0b4f8e;
+  --control-text: var(--button-text);
+  --text-color: #d9ffff;
+  --accent-2: #7fd1ff;
+  --example-start: #044a6a; /* example area background blue */
+  --example-end: #033a53;
+}
+
+*{box-sizing:border-box}
+html,body{height:100%;margin:0;font-family:Inter,Segoe UI,Roboto,Arial,sans-serif;background:var(--bg);color:var(--text-color)}
+/* increase base font size so most text scales up */
+html{font-size:18px}
+/* Make the body a column flex container so header/main/footer can stretch */
+body{display:flex;flex-direction:column;min-height:100vh}
+
+/* Light mode overrides: toggle by adding .light-mode to body */
+/* keep an explicit dark-mode override if needed later */
+/* Light-mode overrides: toggle by adding .light-mode to body */
+body.light-mode{
+  --bg: #eaf7f5; /* page background (very pale mint) */
+  --header-start: #eef7f6; /* header / filters bar */
+  --header-end: #e6f6f5;
+  --filters-bg: var(--header-start);
+  --panel-start: #ffffff; /* white panels */
+  --panel-end: #ffffff;
+  --panel-border: rgba(34,76,79,0.12); /* visible teal-ish border */
+  --muted: #6b7d7f; /* muted text */
+  --text-color: #114449; /* main text color (deep teal) */
+  --accent: #2f8f98; /* primary teal */
+  --accent-2: #79d8e0;
+  --success: #2dd36b; /* bright green for example answer */
+  --danger: #e55f5f;
+  --pill: #e6f6f5; /* pale pill background */
+  --progress-bg: #e8fbef; /* pale progress track */
+  --input-bg: #ffffff; /* white input */
+  --button-bg: #2f8f98; /* filled button color */
+  --button-bg-hover: #1f6669;
+  --button-text: #ffffff;
+  --control-bg: #2f8f98;
+  --control-bg-hover: #1f6669;
+  --control-text: var(--button-text);
+  --example-start: #ffffff;
+}
+
+.app-header{display:flex;align-items:center;justify-content:space-between;padding:18px 28px;background:linear-gradient(180deg,var(--header-start),var(--header-end));border-bottom:1px solid var(--panel-border);box-shadow:0 2px 0 rgba(0,0,0,0.03)}
+.brand{font-weight:800;font-size:1.35rem;color:var(--text-color)}
+.header-right{display:flex;align-items:center;gap:12px}
+.theme-toggle{background:var(--control-bg);border:none;color:var(--control-text);padding:10px 14px;border-radius:18px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;font-size:18px;font-weight:800;box-shadow:0 6px 14px rgba(17,68,70,0.05);transition:background 180ms ease,box-shadow 200ms ease}
+.controls{display:flex;gap:10px;align-items:center;overflow:visible}
+.controls select{padding:10px 12px;border-radius:18px;border:1px solid rgba(17,68,70,0.06);background:var(--control-bg);color:var(--control-text);font-weight:700;box-shadow:0 2px 6px rgba(17,68,70,0.03);transition:background 180ms ease,box-shadow 200ms ease}
+.controls select option{color:var(--text-color)}
+/* Custom dropdown (category) styling to match screenshot */
+.dropdown{position:relative;z-index:1400}
+.dropdown-toggle{background:var(--control-bg);border:1px solid rgba(17,68,70,0.06);padding:10px 14px;border-radius:14px;cursor:pointer;font-weight:800;color:var(--control-text);display:flex;align-items:center;gap:10px;white-space:nowrap;transition:background 180ms ease,box-shadow 200ms ease}
+.dropdown-menu{position:absolute;left:0;top:calc(100% + 8px);min-width:320px;max-width:420px;background:var(--panel-start);border-radius:12px;box-shadow:0 18px 40px rgba(2,12,14,0.5);border:1px solid rgba(17,68,70,0.08);z-index:1400;overflow:hidden;display:none}
+.dropdown-header{padding:14px 18px;font-weight:800;color:var(--text-color);border-bottom:1px solid rgba(17,68,70,0.04);background:linear-gradient(180deg,transparent,rgba(0,0,0,0.02))}
+.dropdown-list{list-style:none;margin:0;padding:6px 0;max-height:420px;overflow:auto}
+.dropdown-list li{padding:16px 20px;border-bottom:1px solid rgba(17,68,70,0.02);cursor:pointer;color:var(--text-color);font-weight:800;position:relative;padding-left:44px}
+.dropdown-list li:hover{background:rgba(17,68,70,0.03)}
+.dropdown-list li.selected{background:transparent}
+.dropdown-list li.selected::before{content:'';position:absolute;left:18px;top:50%;transform:translateY(-50%);width:10px;height:10px;border-radius:999px;background:var(--accent);box-shadow:0 0 0 4px rgba(47,143,152,0.08)}
+.dropdown-list::-webkit-scrollbar{width:12px}
+.dropdown-list::-webkit-scrollbar-thumb{background:rgba(17,68,70,0.12);border-radius:8px}
+.left,.right{flex:1;background:var(--panel-start);padding:20px;border-radius:18px;border:1px solid rgba(17,68,70,0.04);min-height:calc(100vh - 320px);display:flex;flex-direction:column;box-shadow:0 10px 30px rgba(15,55,56,0.04);position:relative}
+.controls button:hover{background:rgba(17,98,176,0.12)}
+.pill{display:block}
+
+/* Reduce top spacing between section border and section title */
+.left .label, .right .label {
+  margin-top: 0;
+  margin-bottom: 10px;
+  padding-top: 0;
+}
+
+/* Unified prominent box style for category display, example answer, and typing input */
+.pill, .answer-input, .example .example-answer{
+  background: var(--input-bg);
+  border: 2px solid var(--panel-border);
+  border-radius: 14px;
+  padding: 18px 20px;
+  color: var(--text-color);
+  box-shadow: 0 10px 24px rgba(2,12,14,0.06);
+}
+
+/* Keep the pill's large typography for category */
+.pill{font-size:clamp(28px,3.6vw,56px);font-weight:900;text-align:center}
+/* Filters bar placed directly under the header */
+.filters-bar .controls{max-width:1200px;margin:0;display:flex;gap:12px;align-items:center;justify-content:flex-start;padding-left:36px}
+.controls button{padding:10px 14px;border-radius:18px;border:none;background:var(--control-bg);color:var(--control-text);cursor:pointer;font-weight:800;box-shadow:0 6px 14px rgba(17,68,70,0.05);transition:background 180ms ease,box-shadow 200ms ease}
+.main{display:flex;gap:28px;padding:32px 36px;max-width:none;width:100%;margin:8px 0;flex:1;align-items:stretch}
+.answer-input{width:100%;padding:18px 24px;border-radius:16px;border:1px solid rgba(17,68,70,0.06);background:var(--input-bg);color:var(--text-color);font-size:clamp(16px,2vw,20px);-webkit-appearance:none;appearance:none;caret-color:var(--accent);transition:box-shadow 180ms ease, border-color 180ms ease;box-shadow:none}
+
+.actions button{flex:1;padding:22px 28px;border-radius:18px;border:none;background:var(--control-bg);color:var(--control-text);cursor:pointer;font-size:20px;font-weight:900;min-height:72px;box-shadow:0 14px 30px rgba(17,68,70,0.16);transition:background 180ms ease,box-shadow 200ms ease}
+
+/* Unified hover for controls: use the theme's control hover color and matching shadow/raise */
+.dropdown-toggle:hover,
+.controls button:hover,
+.controls select:hover,
+.actions button:hover,
+.theme-toggle:hover{
+  background:var(--control-bg-hover);
+  color:var(--control-text);
+}
+.example{margin-top:20px;padding:18px;border-radius:18px;border:1px solid rgba(17,68,70,0.04);background:var(--example-start);box-shadow:0 20px 40px rgba(14,84,85,0.04)}
+.example.hidden{display:none}
+.timer-row{display:flex;justify-content:space-between;margin-top:12px;color:var(--text-color);font-size:1rem}
+.progress{height:12px;background:var(--progress-bg);border-radius:999px;margin:8px 0}
+.progress-inner{height:100%;width:0%;background:linear-gradient(90deg,var(--success),#b8f8cf);border-radius:999px}
+
+.answer-label{display:block;margin-top:12px;color:var(--muted);font-weight:700}
+.answer-input::placeholder{color:var(--muted);opacity:0.75;font-weight:700}
+.answer-input:focus{outline:none;border-color:rgba(63,183,200,0.85);box-shadow:0 12px 30px rgba(47,143,152,0.14);transform:translateY(-1px)}
+
+/* Make the input outline more visible in light mode */
+body.light-mode .answer-input{
+  border:2px solid rgba(17,68,70,0.12);
+  box-shadow:0 6px 18px rgba(17,68,70,0.06);
+}
+
+body.light-mode .answer-input:focus{
+  border-color:rgba(47,143,152,0.9);
+  box-shadow:0 14px 40px rgba(47,143,152,0.12);
+}
+
+.bottom-row{margin-top:auto;display:flex;flex-direction:column;gap:12px}
+.actions{display:flex;gap:22px;align-items:stretch}
+
+.feedback{margin-top:16px;height:30px;color:var(--muted);font-weight:700}
+
+.big-letter{font-size:clamp(90px,12vw,160px);text-align:center;color:var(--accent);font-weight:900;padding:8px 12px;text-shadow:0 8px 20px rgba(15,75,76,0.06)}
+
+/* Unified section header styling: make category, target letter, and example headers identical */
+.label, .example-title{
+  font-size:1.05rem;
+  font-weight:800;
+  color:var(--text-color);
+  margin:0 0 10px 0;
+  padding:0;
+  text-align:left;
+}
+.example-answer{font-size:clamp(30px,4vw,64px);text-align:center;color:var(--success);font-weight:900;text-shadow:0 8px 20px rgba(46,211,107,0.12)}
+
+.app-footer{text-align:center;padding:14px;color:var(--muted);font-size:15px;font-weight:700}
+
+/* Make filter controls larger for readability */
+.filters-bar .controls label{font-size:15px;font-weight:700}
+.filters-bar .controls select{padding:10px 12px;border-radius:8px;font-size:15px}
+.filters-bar .controls button{padding:10px 14px;font-size:15px}
+
+/* increase header spacing */
+.app-header{padding:14px 24px}
+.filters-bar{padding:0 8px;overflow:visible}
+
+@media (max-width:900px){
+  .main{flex-direction:column;padding:12px}
+  .big-letter{font-size:96px}
+}
+
+/* Ensure bottom actions anchor and span full width */
+.left .bottom-row{margin-top:auto;display:flex;flex-direction:column;gap:12px;align-items:stretch}
+.left .actions{display:flex;gap:16px;align-items:stretch;width:100%;margin-top:12px}
+.left .actions button{align-self:stretch}
+.left .actions button{margin-left:8px}
+.left .actions button:first-child{margin-left:0}

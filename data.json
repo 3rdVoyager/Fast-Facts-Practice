@@ -1,0 +1,79 @@
+{
+  "Scientific Tools": {
+    "V": ["Voltmeter", "Vernier caliper"],
+    "T": ["Thermometer", "Tongs", "Test tube"],
+    "R": ["Ruler", "Rain gauge"],
+    "B": ["Bunsen burner", "Beaker"]
+  },
+  "Mammals": {
+    "B": ["Bear", "Bat", "Bison"],
+    "C": ["Cat", "Cow", "Cheetah"],
+    "D": ["Dog", "Deer"],
+    "E": ["Elephant"]
+  },
+  "Geometry Shapes": {
+    "C": ["Circle", "Cone", "Cylinder"],
+    "S": ["Square", "Sphere", "Semicircle"],
+    "T": ["Triangle", "Trapezoid"]
+  },
+  "Human Body Parts": {
+    "H": ["Heart", "Hand"],
+    "L": ["Liver", "Lung"],
+    "S": ["Stomach", "Spleen"],
+    "B": ["Brain", "Bone"]
+  },
+  "Trees": {
+    "O": ["Oak"],
+    "P": ["Pine", "Poplar"],
+    "M": ["Maple"],
+    "W": ["Willow"]
+  },
+  "Planets": {
+    "M": ["Mercury", "Mars"],
+    "V": ["Venus"],
+    "E": ["Earth"],
+    "J": ["Jupiter"]
+  },
+  "Elements": {
+    "H": ["Hydrogen"],
+    "O": ["Oxygen"],
+    "C": ["Carbon"],
+    "N": ["Nitrogen"]
+  },
+  "Weather Terms": {
+    "R": ["Rain", "Rainbow"],
+    "S": ["Snow", "Sleet", "Storm"],
+    "W": ["Wind", "Weather front"]
+  },
+  "Rocks & Minerals": {
+    "G": ["Granite"],
+    "Q": ["Quartz"],
+    "S": ["Schist", "Sandstone"]
+  },
+  "Insects": {
+    "B": ["Bee", "Butterfly"],
+    "A": ["Ant"],
+    "G": ["Grasshopper"]
+  },
+  "Birds": {
+    "S": ["Sparrow", "Swallow"],
+    "E": ["Eagle"],
+    "O": ["Owl"]
+  },
+  "Simple Machines": {
+    "L": ["Lever"],
+    "P": ["Pulley"],
+    "I": ["Inclined plane"]
+  },
+  "Measurements": {
+    "M": ["Meter"],
+    "G": ["Gram"],
+    "S": ["Second"],
+    "L": ["Liter"]
+  },
+  "Oceans": {
+    "P": ["Pacific"],
+    "A": ["Atlantic"],
+    "I": ["Indian"]
+  }
+}
