@@ -38,6 +38,63 @@ function rand(arr){
   return arr[Math.floor(Math.random()*arr.length)];
 }
 
+/**
+ * Validate loaded category data against the app's one-letter prompt model.
+ * Returns a cleaned copy plus a list of warnings for anything skipped.
+ * @param {Record<string, Record<string, string[]>>} rawData
+ */
+function sanitizeData(rawData){
+  const cleaned = {};
+  const warnings = [];
+
+  for(const [category, letters] of Object.entries(rawData || {})){
+    const cleanedLetters = {};
+
+    for(const [letterKey, values] of Object.entries(letters || {})){
+      const prompt = String(letterKey || '').trim().toUpperCase();
+      if(!/^[A-Z]$/.test(prompt)){
+        warnings.push(`${category}: skipped key "${letterKey}" because prompts must be one letter.`);
+        continue;
+      }
+
+      if(!Array.isArray(values)) {
+        warnings.push(`${category} ${prompt}: skipped because the value is not a list.`);
+        continue;
+      }
+
+      const seen = new Set();
+      const cleanedValues = [];
+
+      for(const value of values){
+        if(typeof value !== 'string') continue;
+        const trimmed = value.trim();
+        if(!trimmed) continue;
+
+        const match = trimmed.match(/[A-Za-z]/);
+        if(!match || match[0].toUpperCase() !== prompt){
+          warnings.push(`${category} ${prompt}: skipped "${trimmed}" because it does not start with ${prompt}.`);
+          continue;
+        }
+
+        const normalized = normalize(trimmed);
+        if(!normalized || seen.has(normalized)) continue;
+        seen.add(normalized);
+        cleanedValues.push(trimmed);
+      }
+
+      if(cleanedValues.length > 0){
+        cleanedLetters[prompt] = cleanedValues;
+      }
+    }
+
+    if(Object.keys(cleanedLetters).length > 0){
+      cleaned[category] = cleanedLetters;
+    }
+  }
+
+  return { cleaned, warnings };
+}
+
 // ----------------------------- App state -----------------------------
 const state = {
   data: null, // loaded JSON data
@@ -199,13 +256,17 @@ async function loadData(){
   try{
     const res = await fetch('./data.json');
     if(!res.ok) throw new Error('Could not load data.json: '+res.status);
-    const data = await res.json();
-    state.data = data;
-    state.categories = Object.keys(data).filter(cat => {
+    const rawData = await res.json();
+    const { cleaned, warnings } = sanitizeData(rawData);
+    state.data = cleaned;
+    state.categories = Object.keys(cleaned).filter(cat => {
       // ensure category has at least one letter with a non-empty list
-      const letters = Object.keys(data[cat] || {});
-      return letters.some(L => Array.isArray(data[cat][L]) && data[cat][L].length>0);
+      const letters = Object.keys(cleaned[cat] || {});
+      return letters.some(L => Array.isArray(cleaned[cat][L]) && cleaned[cat][L].length>0);
     }).sort();
+    if(warnings.length){
+      console.warn('data.json warnings:\n' + warnings.join('\n'));
+    }
     populateCategorySelect();
     // populate timer/mode controls (if present)
     populateControls();
@@ -642,7 +703,11 @@ document.addEventListener('keydown', (e)=>{
     if(refs.revealBtn) refs.revealBtn.click();
   }
   if(e.key.toLowerCase() === 'n') {
-    if(refs.startBtn) refs.startBtn.click();
+    if(refs.hintBtn && refs.hintBtn.dataset && refs.hintBtn.dataset.mode === 'next'){
+      refs.hintBtn.click();
+    }else{
+      nextRound();
+    }
   }
 });
 
