@@ -211,6 +211,7 @@
     "J": ["Jupiter"],
     "M": ["Mars", "Mercury", "Moon"],
     "N": ["Neptune"],
+    "P": ["Pluto"],
     "S": ["Saturn"],
     "T": ["Titan"],
     "U": ["Uranus"],
@@ -314,15 +315,6 @@
     "R": ["Ruby"],
     "S": ["Sapphire"],
     "T": ["Topaz"]
-  },
-
-  "Fossils": {
-    "A": ["Ammonite"],
-    "B": ["Bone"],
-    "D": ["Dinosaur"],
-    "F": ["Fern"],
-    "S": ["Shell"],
-    "T": ["Track", "Trilobite"]
   },
 
   "Dinosaur Fossils": {
@@ -545,5 +537,152 @@
     "M": ["Motion"],
     "P": ["Pull", "Push"],
     "S": ["Speed"]
+  },
+
+  "Scientists (Last Name)": {
+    "A": ["Ampere", "Avogadro", "Archimedes"],
+    "B": ["Bohr", "Boyle", "Babbage"],
+    "C": ["Curie", "Copernicus", "Crick"],
+    "D": ["Darwin", "Dirac", "Doppler"],
+    "E": ["Einstein", "Euler", "Eddington"],
+    "F": ["Faraday", "Fermat", "Feynman"],
+    "G": ["Galileo", "Gauss"],
+    "H": ["Hawking", "Hooke", "Hubble"],
+    "J": ["Joule"],
+    "K": ["Kepler"],
+    "L": ["Lavoisier", "Linnaeus", "Lovelace"],
+    "M": ["Mendel", "Maxwell", "Mendeleev"],
+    "N": ["Newton", "Nobel"],
+    "O": ["Oppenheimer", "Ohm"],
+    "P": ["Pasteur", "Planck", "Pythagoras"],
+    "R": ["Rutherford", "Riemann"],
+    "S": ["Sagan", "Salk", "Schrodinger"],
+    "T": ["Tesla", "Turing"],
+    "U": ["Urey"],
+    "V": ["Volta"],
+    "W": ["Watson", "Watt", "Wright"],
+    "Y": ["Young"],
+    "Z": ["Zwicky"]
+  },
+
+  "Geometry Shapes": {
+    "A": ["Arc"],
+    "C": ["Circle", "Cone", "Cube", "Cylinder"],
+    "D": ["Diamond", "Dodecahedron"],
+    "E": ["Ellipse"],
+    "H": ["Hexagon", "Heptagon"],
+    "I": ["Icosahedron"],
+    "O": ["Octagon", "Octahedron", "Oval"],
+    "P": ["Parallelogram", "Pentagon", "Pyramid"],
+    "R": ["Rhombus", "Rectangle"],
+    "S": ["Square", "Sphere", "Star"],
+    "T": ["Triangle", "Tetrahedron", "Torus"]
+  },
+
+  "Types of Ciphers": {
+    "A": ["Atbash"],
+    "C": ["Caesar"],
+    "E": ["Enigma"],
+    "P": ["Playfair"],
+    "S": ["Substitution", "Stream cipher"],
+    "T": ["Transposition", "Vigenere"]
+  },
+
+  "Programming Languages": {
+    "A": ["Ada"],
+    "B": ["BASIC"],
+    "C": ["C", "C++", "C#"],
+    "F": ["Fortran"],
+    "G": ["Go"],
+    "H": ["HTML"],
+    "J": ["Java", "JavaScript"],
+    "K": ["Kotlin"],
+    "L": ["Lisp"],
+    "M": ["Matlab"],
+    "P": ["Pascal", "Python"],
+    "R": ["R", "Ruby"],
+    "S": ["SQL", "Swift"],
+    "T": ["TypeScript"],
+    "V": ["Visual Basic"]
+  },
+
+  "Geography Terms": {
+    "A": ["Archipelago"],
+    "B": ["Bay", "Basin"],
+    "C": ["Canyon", "Cape"],
+    "D": ["Delta"],
+    "E": ["Estuary"],
+    "F": ["Fjord"],
+    "G": ["Gulf"],
+    "I": ["Isthmus", "Island"],
+    "L": ["Lagoon", "Lake"],
+    "P": ["Peninsula", "Plain", "Plateau"],
+    "R": ["River", "Range"],
+    "V": ["Valley", "Volcano"]
+  },
+
+  "Graphing Terms": {
+    "A": ["Axis"],
+    "B": ["Bar chart"],
+    "H": ["Histogram"],
+    "L": ["Line graph"],
+    "M": ["Mean", "Median", "Mode"],
+    "P": ["Plot", "Point", "Pie chart"],
+    "Q": ["Quadrant"],
+    "S": ["Scale", "Slope"],
+    "T": ["Trend"],
+    "X": ["X-axis"],
+    "Y": ["Y-axis"]
+  },
+
+  "Map Symbols": {
+    "C": ["Compass", "Contour"],
+    "E": ["Elevation"],
+    "G": ["Grid"],
+    "L": ["Legend", "Latitude"],
+    "O": ["Orientation"],
+    "R": ["Road symbol"],
+    "S": ["Scale bar"],
+    "T": ["Topographic"],
+    "X": ["Crosshair"],
+    "Y": ["Yardline (map)" ]
+  },
+
+  "Maryland Counties": {
+    "A": ["Allegany", "Anne Arundel"],
+    "B": ["Baltimore County", "Baltimore City"],
+    "C": ["Calvert", "Caroline", "Carroll", "Cecil", "Charles"],
+    "D": ["Dorchester"],
+    "F": ["Frederick"],
+    "G": ["Garrett"],
+    "H": ["Harford", "Howard"],
+    "K": ["Kent"],
+    "M": ["Montgomery"],
+    "P": ["Prince George's"],
+    "Q": ["Queen Anne's"],
+    "S": ["St. Mary's", "Somerset"],
+    "T": ["Talbot"],
+    "W": ["Washington", "Wicomico", "Worcester"]
+  },
+
+  "Maryland Waterways": {
+    "C": ["Chesapeake Bay", "Choptank River", "Chester River"],
+    "P": ["Potomac River", "Patapsco River", "Patuxent River"],
+    "S": ["Susquehanna River"],
+    "N": ["Nanticoke River"],
+    "M": ["Monocacy River", "Magothy River"],
+    "W": ["Wicomico River"],
+    "T": ["Tred Avon River"]
+  },
+
+  "Geologic Time Scale": {
+    "P": ["Precambrian", "Paleozoic", "Permian"],
+    "M": ["Mesozoic"],
+    "C": ["Cenozoic", "Cambrian", "Carboniferous"],
+    "J": ["Jurassic"],
+    "T": ["Triassic"],
+    "Q": ["Quaternary"],
+    "O": ["Ordovician"],
+    "S": ["Silurian"]
   }
 }
