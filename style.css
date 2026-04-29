@@ -126,7 +126,7 @@ body.light-mode{
   color:var(--control-text);
   transform:translateY(-1px);
 }
-.dropdown-list li.selected{ /* keep selected marker but allow hover styles to apply */ }
+.dropdown-list li.selected::before{ /* selected marker handled in ::before */ }
 .dropdown-list li.selected::before{content:'';position:absolute;left:18px;top:50%;transform:translateY(-50%);width:10px;height:10px;border-radius:999px;background:var(--accent);box-shadow:0 0 0 4px rgba(47,143,152,0.08)}
 .dropdown-list::-webkit-scrollbar{width:12px}
 .dropdown-list::-webkit-scrollbar-thumb{background:rgba(17,68,70,0.12);border-radius:8px}
@@ -363,3 +363,14 @@ body.light-mode .answer-input:focus{
 .modal-actions{display:flex;justify-content:flex-end;margin-top:12px}
 .modal-actions button{padding:8px 12px;border-radius:10px;border:none;background:var(--control-bg);color:var(--control-text);font-weight:800;cursor:pointer}
 .modal-actions button:hover{background:var(--control-bg-hover)}
+
+/* Instructions modal improvements */
+.modal-content{padding:26px;border-radius:16px;max-width:720px;background:linear-gradient(180deg, rgba(2,24,34,0.9), rgba(3,32,46,0.95));border:1px solid rgba(255,255,255,0.04)}
+.modal-content h3{font-size:1.25rem;color:var(--accent-2);text-shadow:0 6px 18px rgba(0,0,0,0.4)}
+.muted-note{font-size:0.95rem;color:var(--muted);margin-bottom:10px}
+.instructions-list{margin:8px 0 0 20px;padding:0 6px 0 0;color:var(--text-color);font-weight:700}
+.instructions-list li{margin:8px 0;line-height:1.35}
+.instructions-list li strong{color:var(--accent-2)}
+.modal-content .tip{margin-top:12px;color:var(--muted);font-weight:700}
+.modal-actions .primary{background:var(--accent);color:#012326;box-shadow:0 12px 30px rgba(59,181,255,0.12);padding:10px 14px;border-radius:12px}
+.modal-close{background:rgba(0,0,0,0.12);width:36px;height:36px;border-radius:8px;display:inline-flex;align-items:center;justify-content:center}

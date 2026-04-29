@@ -126,13 +126,20 @@
     <div class="modal-content" role="document">
       <button class="modal-close" id="instructionsCloseBtn" aria-label="Close">✕</button>
       <h3 id="instructionsTitle">How to use Fast Facts Simulator</h3>
-      <p>1. Choose a Category, Timer, and Mode from the controls in the header.</p>
-      <p>2. A letter will appear on the right and a category will appear on the left.</p>
-      <p>3. Type answers that start with the letter into the input. Validation is live — correct answers are accepted instantly.</p>
-      <p>4. Use <strong>Hint</strong> to reveal a progressive prefix; <strong>Give Up</strong> shows the canonical answer and examples.</p>
-      <p>5. When the round ends (correct answer or time expired) the Hint button becomes <strong>Next Round</strong>.</p>
-      <p>6. Toggle <strong>Auto Move</strong> to automatically advance after a short countdown when a round finishes.</p>
-      <div class="modal-actions"><button id="instructionsDoneBtn">Got it</button></div>
+      <p class="muted-note">Updated: includes Settings, Mode cycling, Timer Off, Auto Move, and Tournament Readiness.</p>
+      <ol class="instructions-list">
+        <li><strong>Choose filters:</strong> open <em>Category</em> to pick topics; settings live in <strong>Settings ▾</strong> (gear).</li>
+        <li><strong>Mode:</strong> in Settings the <strong>Mode</strong> button cycles Easy → Medium → Hard. Switching modes resets saved scores.</li>
+        <li><strong>Timer:</strong> pick a timer or set <em>Timer: Off</em> to disable timing.</li>
+        <li><strong>Round flow:</strong> a letter appears on the right and the category on the left. Type answers starting with the letter; correct answers are accepted instantly (live validation).</li>
+        <li><strong>Hints & reveal:</strong> press <em>Hint</em> to reveal progressive prefixes. <em>Give Up</em> reveals canonical answers and example answers.</li>
+        <li><strong>Next round:</strong> when a round ends the Hint button becomes <em>Next Round</em> (you can also press Enter to advance).</li>
+        <li><strong>Auto Move:</strong> enable Auto Move in Settings to automatically advance after the short countdown when a round ends.</li>
+        <li><strong>Scoring & readiness:</strong> streaks and best scores are shown in the score panel. Tournament Readiness is visible only in Hard mode and is computed from recent performance.</li>
+        <li><strong>Persistence:</strong> filters and scores persist to localStorage; Reset Scores clears saved data.</li>
+      </ol>
+      <p class="tip">Tip: Use the Settings menu to toggle Dark/Light theme, Auto Move, or reset scores. The header's gear is the single place for those options.</p>
+      <div class="modal-actions"><button id="instructionsDoneBtn" class="primary">Got it</button></div>
     </div>
   </div>
 
