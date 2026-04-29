@@ -228,7 +228,7 @@
     "V": ["Venus"]
   },
 
-  "Moons of the Solar System": {
+  "Moons": {
     "A": ["Ariel", "Amalthea", "Atlas", "Adrastea", "Ananke"],
     "B": ["Bianca"],
     "C": ["Callisto", "Charon", "Cordelia", "Caliban", "Cupid"],
@@ -762,5 +762,54 @@
     "Q": ["Quaternary"],
     "S": ["Silurian"],
     "T": ["Triassic"]
+  },
+
+  "CategoryDescriptions": {
+    "Fields of Science": "Major branches of science such as biology, chemistry, physics, and earth science.",
+    "Scientific Tools": "Instruments used in laboratories and field science for measurement and experimentation.",
+    "Trees": "Common types of trees found in forests, parks, and ecosystems around the world.",
+    "Flowers": "Flowering plants commonly recognized in botany and everyday life.",
+    "Mammals": "Warm-blooded vertebrate animals that typically have hair or fur and produce milk.",
+    "Insects": "Small invertebrate animals with six legs and segmented bodies, often with wings.",
+    "Birds": "Feathered, warm-blooded animals that lay eggs and typically have wings for flight.",
+    "Fish": "Aquatic vertebrate animals that live in water and breathe using gills.",
+    "Amphibians": "Cold-blooded animals that typically live both in water and on land during their life cycle.",
+    "Reptiles": "Cold-blooded vertebrates such as snakes, lizards, turtles, and crocodiles.",
+    "Human Body Parts": "External parts of the human body such as limbs, facial features, and joints.",
+    "Human Organs": "Internal body structures that perform essential life functions.",
+    "Human Bones": "Parts of the human skeletal system that provide structure and support.",
+    "Cells": "Basic structural and functional units of all living organisms.",
+    "Diseases": "Medical conditions that disrupt normal body function.",
+    "Planets and Dwarf Planets": "Major planets and recognized dwarf planets in the solar system.",
+    "Moons": "Natural satellites that orbit planets and dwarf planets.",
+    "Astronomy Terms": "Objects, concepts, and phenomena related to space and the universe.",
+    "Constellations": "Recognized patterns of stars in the night sky.",
+    "Space Missions": "Named space exploration missions and spacecraft sent beyond Earth.",
+    "Landforms": "Natural physical features of Earth's surface such as mountains, valleys, and plains.",
+    "Oceans & Seas": "Major bodies of saltwater including oceans, seas, and large gulfs.",
+    "Natural Disasters": "Natural events that can cause significant environmental damage.",
+    "Rocks & Minerals": "Naturally occurring solid materials that make up Earth's crust.",
+    "Dinosaurs": "Extinct prehistoric reptiles that lived during the Mesozoic Era.",
+    "Weather Terms": "Atmospheric conditions and meteorological concepts.",
+    "Energy & Electricity": "Concepts and components related to energy, circuits, and electrical systems.",
+    "Colors": "Basic and common colors used in language and science.",
+    "Habitats": "Natural environments where plants and animals live.",
+    "Food Chain": "Ecological relationships showing how energy flows through organisms.",
+    "Measurement Units": "Standard units used to measure length, mass, time, temperature, and more.",
+    "Metric Prefixes": "Prefixes that modify metric units by powers of ten.",
+    "Water Cycle": "Processes that move water through evaporation, condensation, precipitation, and collection.",
+    "Moon Phases": "Apparent shapes of the Moon as seen from Earth during its orbit.",
+    "Cloud Types": "Classifications of clouds based on shape and altitude.",
+    "Forces & Motion": "Physics concepts describing movement and interactions between objects.",
+    "Scientists (Last Name)": "Famous scientists identified by surname.",
+    "Element Names": "Official names of chemical elements in the periodic table.",
+    "Element Symbols": "Abbreviated chemical symbols representing elements.",
+    "Programming Languages": "Languages used to write computer programs and software.",
+    "Geometry Shapes": "Two-dimensional and three-dimensional geometric figures.",
+    "Geography": "Physical features and landforms of Earth.",
+    "Graphing Terms": "Mathematical terms used in charts, graphs, and data visualization.",
+    "Maryland Counties": "Administrative counties and independent city in the state of Maryland.",
+    "Maryland Waterways": "Rivers, bays, and water bodies located in Maryland.",
+    "Geologic Time": "Major divisions of Earth's geological history from ancient to recent time."
   }
 }

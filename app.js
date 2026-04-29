@@ -135,6 +135,7 @@ const refs = {
   modeList: document.getElementById('modeList'),
   // displays / inputs
   categoryDisplay: document.getElementById('categoryDisplay'),
+  categoryDescription: document.getElementById('categoryDescription'),
   timeText: document.getElementById('timeText'),
   timePct: document.getElementById('timePct'),
   progressBar: document.getElementById('progressBar'),
@@ -281,14 +282,28 @@ async function loadData(){
     populateCategorySelect();
     // populate timer/mode controls (if present)
     populateControls();
+    // load category descriptions from data.json (optional)
+    window.CATEGORY_DESCRIPTIONS = rawData.CategoryDescriptions || {};
     // apply persisted filters (if any) before starting
     loadFiltersFromStorage();
+    // ensure the example area is visible by default (content will be empty during rounds)
+    if(refs.exampleArea && refs.exampleArea.classList){ refs.exampleArea.classList.remove('hidden'); }
     // start the first round immediately after data loads
     if(state.categories && state.categories.length>0) nextRound();
   }catch(err){
     console.error(err);
     refs.feedback.textContent = 'Failed to load data.json — see console for details.';
   }
+}
+
+/**
+ * Update the visible category description for the current category.
+ * If no description exists, show a short placeholder hint.
+ */
+function updateCategoryDescription(category){
+  if(!refs.categoryDescription) return;
+  const desc = (window.CATEGORY_DESCRIPTIONS && window.CATEGORY_DESCRIPTIONS[category]) || '';
+  refs.categoryDescription.textContent = desc || 'Try to think of common things in this area; type them to answer.';
 }
 
 /**
@@ -387,6 +402,9 @@ function nextRound(){
   refs.revealBtn.disabled = false;
   hideExample();
 
+  // update category description when a round starts
+  updateCategoryDescription(category);
+
   renderTimer();
   startTimer();
   refs.answerInput.focus();
@@ -482,7 +500,6 @@ function revealAnswer(reason){
 function showExample(text){
   if(!refs.exampleArea) return;
   refs.exampleAnswer.textContent = text || '—';
-  refs.exampleArea.classList.remove('hidden');
 }
 
 /**
@@ -491,7 +508,6 @@ function showExample(text){
 function hideExample(){
   if(!refs.exampleArea) return;
   refs.exampleAnswer.textContent = '';
-  refs.exampleArea.classList.add('hidden');
 }
 
 /**

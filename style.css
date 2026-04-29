@@ -29,6 +29,7 @@
   --accent-2: #7fd1ff;
   --example-start: #044a6a; /* example area background blue */
   --example-end: #033a53;
+  --box-foreground: var(--accent);
 }
 
 /* Success (correct answer) colors */
@@ -152,6 +153,35 @@ body.light-mode{
 
 /* Keep the pill's large typography for category */
 .pill{font-size:clamp(28px,3.6vw,56px);font-weight:900;text-align:center}
+/* Compute a single target height for the category and letter boxes so they match exactly.
+   This keeps long category names from shifting layout while preserving font-size. */
+:root{--target-box-height: calc(clamp(90px,12vw,160px) + 20px)}
+#categoryDisplay, #letterDisplay{
+  min-height: var(--target-box-height);
+  max-height: var(--target-box-height);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:18px 20px;
+  white-space:normal;
+  overflow:hidden;
+  text-align:center;
+  word-break:break-word;
+  overflow-wrap:anywhere;
+  color: var(--box-foreground);
+}
+
+/* Category description area under the category pill */
+.category-desc{
+  margin-top:12px;
+  color:var(--muted);
+  font-size:0.95rem;
+  font-weight:700;
+  min-height:46px; /* reserve a small block so layout doesn't jump */
+  line-height:1.2;
+  text-align: center;
+  opacity:0.95;
+}
 /* Filters bar placed directly under the header */
 .filters-bar .controls{max-width:1200px;margin:0;display:flex;gap:12px;align-items:center;justify-content:flex-start;padding-left:36px}
 .controls button{padding:10px 14px;border-radius:18px;border:none;background:var(--control-bg);color:var(--control-text);cursor:pointer;font-weight:800;box-shadow:0 6px 14px rgba(17,68,70,0.05);transition:background 180ms ease,box-shadow 200ms ease}
@@ -169,7 +199,7 @@ body.light-mode{
   background:var(--control-bg-hover);
   color:var(--control-text);
 }
-.example{margin-top:20px;padding:18px;border-radius:18px;border:1px solid rgba(17,68,70,0.04);background:var(--example-start);box-shadow:0 20px 40px rgba(14,84,85,0.04)}
+.example{margin-top:20px;padding:18px;border-radius:18px;border:1px solid rgba(17,68,70,0.04);background:var(--example-start);box-shadow:0 20px 40px rgba(14,84,85,0.04);display:flex;flex-direction:column;flex:1}
 .example.hidden{display:none}
 .timer-row{display:flex;justify-content:space-between;margin-top:12px;color:var(--text-color);font-size:1rem}
 .progress{height:12px;background:var(--progress-bg);border-radius:999px;margin:8px 0}
@@ -234,7 +264,8 @@ body.light-mode .answer-input:focus{
   padding:0;
   text-align:left;
 }
-.example-answer{font-size:clamp(30px,4vw,64px);text-align:center;color:var(--success);font-weight:900;text-shadow:0 8px 20px rgba(46,211,107,0.12)}
+.example-title{margin:0 0 12px 0;align-self:flex-start}
+.example-answer{flex:1;font-size:clamp(30px,4vw,64px);text-align:center;color:var(--success);font-weight:900;text-shadow:0 8px 20px rgba(46,211,107,0.12);align-self:stretch;display:flex;align-items:center;justify-content:center;padding:12px}
 
 .app-footer{text-align:center;padding:14px;color:var(--muted);font-size:15px;font-weight:700}
 
