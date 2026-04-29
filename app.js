@@ -139,6 +139,7 @@ const refs = {
   timePct: document.getElementById('timePct'),
   progressBar: document.getElementById('progressBar'),
   answerInput: document.getElementById('answerInput'),
+  answerWrap: document.querySelector('.answer-wrap'),
   hintBtn: document.getElementById('hintBtn'),
   revealBtn: document.getElementById('revealBtn'),
   feedback: document.getElementById('feedback'),
@@ -161,14 +162,19 @@ refs.autoToggle = document.getElementById('autoToggle');
  * Populate custom timer and mode dropdowns (if present).
  */
 function populateControls(){
-  // timers
-  const timers = [10,20,30,40,50,60];
+  // timers (include an explicit 'Off' option)
+  const timers = ['off',10,20,30,40,50,60];
   if(refs.timerList){
     refs.timerList.innerHTML = '';
     timers.forEach((t, idx)=>{
       const li = document.createElement('li');
-      li.textContent = `${t}s`;
-      li.dataset.value = String(t);
+      if(String(t) === 'off'){
+        li.textContent = 'Off';
+        li.dataset.value = 'off';
+      }else{
+        li.textContent = `${t}s`;
+        li.dataset.value = String(t);
+      }
       if(t===30) li.classList.add('selected');
       refs.timerList.appendChild(li);
     });
@@ -225,7 +231,7 @@ function populateControls(){
         if(refs.categoryToggle){
           const val = (obj.category === '__random__' || state.categories.includes(obj.category)) ? obj.category : '__random__';
           refs.categoryToggle.dataset.value = val;
-          refs.categoryToggle.textContent = (val === '__random__') ? 'Random Category ▾' : (val + ' ▾');
+          refs.categoryToggle.textContent = (val === '__random__') ? 'Category: Random ▾' : ('Category: ' + val + ' ▾');
           if(refs.categoryList){
             Array.from(refs.categoryList.children).forEach(li=> li.classList.toggle('selected', li.dataset.value === val));
           }
@@ -234,7 +240,7 @@ function populateControls(){
       // timer
       if(obj.timer){
         if(refs.timerSelect){ refs.timerSelect.value = obj.timer; }
-        if(refs.timerToggle){ refs.timerToggle.dataset.value = obj.timer; refs.timerToggle.textContent = `${obj.timer}s ▾`; }
+        if(refs.timerToggle){ refs.timerToggle.dataset.value = obj.timer; refs.timerToggle.textContent = (obj.timer === 'off') ? 'Timer: Off ▾' : `Timer: ${obj.timer}s ▾`; }
         if(refs.timerList){ Array.from(refs.timerList.children).forEach(li=> li.classList.toggle('selected', li.dataset.value === String(obj.timer))); }
       }
       // mode
@@ -359,13 +365,19 @@ function nextRound(){
   const mode = (refs.modeSelect && refs.modeSelect.value) ? refs.modeSelect.value : (refs.modeToggle && refs.modeToggle.dataset.value) ? refs.modeToggle.dataset.value : 'easy';
   const fullLen = String(canonical).length;
   if(mode === 'easy') state.current.hintCap = fullLen;
-  else if(mode === 'medium') state.current.hintCap = Math.ceil(fullLen/2);
+  else if(mode === 'medium') state.current.hintCap = Math.floor(fullLen/2); // allow hints up to half the word (rounded down)
   else state.current.hintCap = 0; // hard: no hints
 
   // timer setup (support native select or custom toggle)
-  const t = Number((refs.timerSelect && refs.timerSelect.value) ? refs.timerSelect.value : (refs.timerToggle && refs.timerToggle.dataset.value) ? refs.timerToggle.dataset.value : 30) || 30;
-  state.current.timerMs = t;
-  state.current.timeLeft = t;
+  const rawTimerVal = (refs.timerSelect && refs.timerSelect.value) ? refs.timerSelect.value : (refs.timerToggle && refs.timerToggle.dataset.value) ? refs.timerToggle.dataset.value : '30';
+  if(rawTimerVal === 'off' || rawTimerVal === '0'){
+    state.current.timerMs = 0; // timer disabled
+    state.current.timeLeft = 0;
+  }else{
+    const t = Number(rawTimerVal) || 30;
+    state.current.timerMs = t;
+    state.current.timeLeft = t;
+  }
 
   // reset UI elements
   refs.answerInput.value = '';
@@ -383,14 +395,16 @@ function nextRound(){
 // ----------------------------- Timer -----------------------------
 function startTimer(){
   stopTimer();
+  // do not start when timer is disabled/off
+  if(!state.current.timerMs || state.current.timerMs <= 0) return;
   state.current.timerId = setInterval(()=>{
     state.current.timeLeft -= 1;
     if(state.current.timeLeft <= 0){
       state.current.timeLeft = 0;
       renderTimer();
       stopTimer();
-          // handle timeout: disable input and show a Next Round button in place of Hint/Reveal
-          handleTimeout();
+      // handle timeout: disable input and show a Next Round button in place of Hint/Reveal
+      handleTimeout();
       return;
     }
     renderTimer();
@@ -406,7 +420,13 @@ function stopTimer(){
 
 function renderTimer(){
   const left = state.current.timeLeft;
-  const total = state.current.timerMs || 1;
+  const total = state.current.timerMs || 0;
+  if(!total || total <= 0){
+    refs.timeText.textContent = `Timer: Off`;
+    refs.timePct.textContent = `0%`;
+    refs.progressBar.style.width = `0%`;
+    return;
+  }
   refs.timeText.textContent = `Time Remaining: ${left}s`;
   const pct = Math.round((left/total)*100);
   refs.timePct.textContent = `${pct}%`;
@@ -517,6 +537,9 @@ function restoreActionButtons(){
   revertButtonsFromNext();
   if(refs.hintBtn){ refs.hintBtn.style.display = 'inline-block'; refs.hintBtn.disabled = (state.current.hintCap<=0); }
   if(refs.revealBtn){ refs.revealBtn.style.display = 'inline-block'; refs.revealBtn.disabled = false; }
+  // remove correct styling on the input when restoring actions
+  if(refs.answerInput && refs.answerInput.classList){ refs.answerInput.classList.remove('correct'); }
+  if(refs.answerWrap && refs.answerWrap.classList){ refs.answerWrap.classList.remove('correct'); }
 }
 
 // ----------------------------- Validation -----------------------------
@@ -557,6 +580,9 @@ function handleCorrectMatch(matched, reason){
   // Do not show a textual notice on correct answers; only reveal the example area.
   showExample(matched);
   refs.answerInput.disabled = true;
+  // mark input visually as correct
+  if(refs.answerInput && refs.answerInput.classList){ refs.answerInput.classList.add('correct'); }
+  if(refs.answerWrap && refs.answerWrap.classList){ refs.answerWrap.classList.add('correct'); }
   refs.hintBtn.disabled = true;
   refs.revealBtn.disabled = true;
 
@@ -565,6 +591,12 @@ function handleCorrectMatch(matched, reason){
   // if auto-move is enabled, schedule a short automatic advance with countdown
   if(refs.autoToggle && (refs.autoToggle.dataset.value === 'true' || refs.autoToggle.getAttribute('aria-pressed') === 'true')){
     startAutoCountdown(AUTO_MOVE_DELAY_MS);
+  }
+
+  // add a brief pulse to emphasize the correct input
+  if(refs.answerInput && refs.answerInput.classList){
+    refs.answerInput.classList.add('pulse');
+    setTimeout(()=>{ try{ refs.answerInput.classList.remove('pulse'); }catch(e){} }, 1000);
   }
 }
 
@@ -578,6 +610,7 @@ function clearNextTimeout(){
     state.current.nextCountdownInterval = null;
   }
 }
+
 
 /**
  * Start the auto-move countdown and update the Hint/Next button label.
@@ -737,7 +770,7 @@ if(refs.categoryToggle && refs.categoryMenu && refs.categoryList){
     li.classList.add('selected');
     const val = li.dataset.value || '__random__';
     refs.categoryToggle.dataset.value = val;
-    refs.categoryToggle.textContent = (val === '__random__') ? 'Random Category ▾' : (li.textContent + ' ▾');
+    refs.categoryToggle.textContent = (val === '__random__') ? 'Category: Random ▾' : ('Category: ' + li.textContent + ' ▾');
     // keep menu open (do not close on selection)
     // persist and start a new round when the category filter is changed
     saveFiltersToStorage();
@@ -779,7 +812,8 @@ if(refs.timerToggle && refs.timerMenu && refs.timerList){
     li.classList.add('selected');
     const val = li.dataset.value || '30';
     refs.timerToggle.dataset.value = val;
-    refs.timerToggle.textContent = `${val}s ▾`;
+    if(val === 'off') refs.timerToggle.textContent = `Timer: Off ▾`;
+    else refs.timerToggle.textContent = `Timer: ${val}s ▾`;
     // keep menu open (do not close on selection)
     // persist and start a new round when timer filter is changed
     saveFiltersToStorage();

@@ -31,6 +31,16 @@
   --example-end: #033a53;
 }
 
+/* Success (correct answer) colors */
+:root {
+  --correct-bg: rgba(46,211,107,0.06);
+  --correct-border: #2ecc71;
+}
+body.light-mode {
+  --correct-bg: rgba(46,211,107,0.12);
+
+}
+
 *{box-sizing:border-box}
 html,body{height:100%;margin:0;font-family:Inter,Segoe UI,Roboto,Arial,sans-serif;background:var(--bg);color:var(--text-color)}
 /* increase base font size so most text scales up */
@@ -168,6 +178,34 @@ body.light-mode{
 .answer-label{display:block;margin-top:12px;color:var(--muted);font-weight:700}
 .answer-input::placeholder{color:var(--muted);opacity:0.75;font-weight:700}
 .answer-input:focus{outline:none;border-color:rgba(63,183,200,0.85);box-shadow:0 12px 30px rgba(47,143,152,0.14);transform:translateY(-1px)}
+
+/* Input state when a correct answer was entered */
+.answer-input.correct{
+  background: linear-gradient(90deg, rgba(46,211,107,0.18), rgba(46,211,107,0.08));
+  border: 2px solid var(--correct-border);
+  box-shadow: 0 12px 40px rgba(46,211,107,0.28), 0 0 30px rgba(46,211,107,0.12) inset;
+  color: #052b1f;
+  transform: translateY(-2px) scale(1.01);
+  transition: transform 180ms ease, box-shadow 240ms ease, background 200ms ease, border-color 200ms ease;
+  caret-color: #0b3d1f;
+}
+
+/* wrapper around input to position the checkmark */
+.answer-wrap{position:relative;display:block}
+.answer-wrap .checkmark{position:absolute;right:18px;top:50%;transform:translateY(-50%);font-size:1.25rem;color:var(--correct-border);opacity:0;transition:opacity 220ms ease, transform 220ms ease;pointer-events:none}
+.answer-wrap.correct .checkmark{opacity:1;transform:translateY(-50%) scale(1.05)}
+.answer-wrap .answer-input{padding-right:56px} /* make space for checkmark */
+
+/* brief pulse animation for emphasis when correct */
+.answer-input.correct.pulse{
+  animation: pulse-correct 950ms ease-in-out;
+}
+
+@keyframes pulse-correct{
+  0%{ box-shadow: 0 8px 20px rgba(46,211,107,0.18), 0 0 18px rgba(46,211,107,0.06) inset; transform: translateY(0) scale(1); }
+  50%{ box-shadow: 0 18px 48px rgba(46,211,107,0.36), 0 0 28px rgba(46,211,107,0.14) inset; transform: translateY(-3px) scale(1.02); }
+  100%{ box-shadow: 0 12px 40px rgba(46,211,107,0.28), 0 0 20px rgba(46,211,107,0.10) inset; transform: translateY(-2px) scale(1.01); }
+}
 
 /* Make the input outline more visible in light mode */
 body.light-mode .answer-input{

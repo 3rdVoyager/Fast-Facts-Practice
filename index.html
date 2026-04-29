@@ -20,9 +20,9 @@
         <div class="filters-bar">
           <div class="controls">
             <div class="dropdown" id="categoryDropdown">
-              <button id="categoryToggle" class="dropdown-toggle" aria-expanded="false">Random Category ▾</button>
+              <button id="categoryToggle" class="dropdown-toggle" aria-expanded="false">Category: Random ▾</button>
               <div id="categoryMenu" class="dropdown-menu" aria-hidden="true">
-                <div class="dropdown-header">Practice Area</div>
+                <div class="dropdown-header">Category</div>
                 <ul id="categoryList" class="dropdown-list">
                   <!-- items populated dynamically -->
                 </ul>
@@ -73,7 +73,10 @@
           <div id="progressBar" class="progress-inner"></div>
         </div>
 
-        <input id="answerInput" class="answer-input" placeholder="Type your answer..." autocomplete="off" />
+        <div class="answer-wrap">
+          <input id="answerInput" class="answer-input" placeholder="Type your answer..." autocomplete="off" />
+          <span class="checkmark" aria-hidden="true">✔</span>
+        </div>
 
         <!-- Action buttons placed directly under the input as requested -->
         <div class="actions">
@@ -99,7 +102,7 @@
       </section>
     </main>
 
-    <footer class="app-footer">Simple Fast Facts practice</footer>
+    <footer class="app-footer">Simple Fast Facts Practice</footer>
 
   <!-- Instructions modal -->
   <div id="instructionsModal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="instructionsTitle">
@@ -107,7 +110,7 @@
     <div class="modal-content" role="document">
       <button class="modal-close" id="instructionsCloseBtn" aria-label="Close">✕</button>
       <h3 id="instructionsTitle">How to use Fast Facts Simulator</h3>
-      <p>1. Choose a Practice Area (category), Timer, and Mode from the controls in the header.</p>
+      <p>1. Choose a Category, Timer, and Mode from the controls in the header.</p>
       <p>2. A target letter will appear on the right and a category will appear on the left.</p>
       <p>3. Type answers that start with the target letter into the input. Validation is live — correct answers are accepted instantly.</p>
       <p>4. Use <strong>Hint</strong> to reveal a progressive prefix; <strong>Reveal</strong> shows the canonical answer and examples.</p>
