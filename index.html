@@ -52,11 +52,12 @@
             <div id="settingsMenu" class="dropdown-menu" aria-hidden="true">
               <div class="dropdown-header">Settings</div>
               <div class="dropdown-list settings-list" role="menu">
-                <div class="settings-item"><button id="modeToggle" class="dropdown-toggle" aria-pressed="false">Mode: Easy</button></div>
-                <div class="settings-item"><button id="autoToggle" class="dropdown-toggle" aria-pressed="false">Auto Move: Off</button></div>
-                <div class="settings-item"><button id="resetScoreBtn" class="dropdown-toggle">Reset Scores</button></div>
+                <div class="settings-item"><button id="modeToggle" class="dropdown-toggle" aria-pressed="false">Tournament: Off</button></div>
                 <div class="settings-item"><button id="scoreboardToggle" class="dropdown-toggle" aria-pressed="true">Show Scoreboard: On</button></div>
-                <div class="settings-item"><button id="themeToggle" class="dropdown-toggle" aria-label="Toggle dark/light theme">Dark Mode🌙</button></div>
+                <div class="settings-item"><button id="autoToggle" class="dropdown-toggle" aria-pressed="false">Auto Advance: Off</button></div>
+                <div class="settings-item"><button id="hintsToggle" class="dropdown-toggle" aria-pressed="false">Hints: All</button></div>
+                <div class="settings-item"><button id="themeToggle" class="dropdown-toggle" aria-pressed="false">Dark Mode🌙</button></div>
+                <div class="settings-item"><button id="resetScoreBtn" class="dropdown-toggle">Reset Scores</button></div>
               </div>
             </div>
           </div>
@@ -129,20 +130,48 @@
     <div class="modal-content" role="document">
       <button class="modal-close" id="instructionsCloseBtn" aria-label="Close">✕</button>
       <h3 id="instructionsTitle">How to use Fast Facts Simulator</h3>
-      <p class="muted-note">Updated: documents Settings (gear), Mode cycling, Timer Off, Auto Move, Scoreboard visibility, and Tournament Readiness.</p>
-      <ol class="instructions-list">
-        <li><strong>Choose filters:</strong> open <em>Category</em> to pick topics. Filters are in the header; advanced controls live under the <strong>Settings ▾</strong> (gear) at the far right.</li>
-        <li><strong>Mode (Settings):</strong> inside Settings the <strong>Mode</strong> button cycles Easy → Medium → Hard → Tournament. Switching modes resets saved scores. <strong>Tournament</strong> locks filters and enforces competitive defaults (random category, 20s timer, Auto Move enabled) — filters cannot be changed while in Tournament mode.</li>
-        <li><strong>Timer:</strong> choose a timer duration or pick <em>Timer: Off</em> to disable timing entirely.</li>
-        <li><strong>Round flow & validation:</strong> a letter appears on the right and the category on the left. Type answers starting with that letter; live-as-you-type validation accepts correct answers instantly and shows a green checkmark for matches.</li>
-        <li><strong>Hints & reveal:</strong> press <em>Hint</em> to reveal progressive prefixes (live-as-you-type hints). Hints are disabled in <strong>Hard</strong> and Tournament modes — the Hint button will indicate when disabled. Press <em>Give Up</em> to reveal canonical and example answers.</li>
-        <li><strong>Next round & Enter:</strong> when a round ends the Hint button transforms into <em>Next Round</em>; you can also press Enter to advance. If Auto Move is enabled, a short countdown will advance automatically.</li>
-        <li><strong>Auto Move:</strong> enable Auto Move in Settings to automatically move to the next round after the short countdown when a round ends.</li>
-        <li><strong>Scoreboard visibility:</strong> use <strong>Show Scoreboard</strong> in Settings to hide or show the scores panel; this preference is saved to localStorage and restored on load.</li>
-        <li><strong>Scoring & readiness:</strong> streaks, best streak, correct counts and rounds appear in the score panel. Tournament Readiness (0–100) is shown in all modes and is used by competitive modes for penalties/bonuses; its impact is strongest in <strong>Hard</strong> and <strong>Tournament</strong> modes.</li>
-        <li><strong>Persistence:</strong> filters, scoreboard visibility, and scores persist to localStorage. Use <strong>Reset Scores</strong> in Settings to clear stored score data.</li>
-      </ol>
-      <p class="tip">Tip: The gear icon (Settings) is the single place to toggle Mode, Auto Move, Show Scoreboard, Dark/Light theme, and Reset Scores.</p>
+      <p class="muted-note">Quick reference: Settings, Modes, Hints, Timer, Scoring.</p>
+      <div class="instructions-ref">
+        <section>
+          <h4>Filters & Controls</h4>
+          <ul>
+            <li><strong>Category</strong> — choose a topic from the header dropdown; select <em>Random</em> to have categories chosen each round.</li>
+            <li><strong>Timer</strong> — choose a countdown or set <em>Timer: Off</em> to disable timing for rounds.</li>
+            <li><strong>Settings (gear)</strong> — contains Tournament, Show Scoreboard, Auto Advance, Hints, Dark/Light, and Reset Scores.</li>
+          </ul>
+        </section>
+        <section>
+          <h4>Modes</h4>
+          <ul>
+            <li><strong>Tournament</strong> — single toggle in Settings. When enabled: filters are locked, category is forced Random, timer is set to 20s, Auto Advance is enabled, and hints are disabled.</li>
+            <li><strong>Hard / Competitive behavior</strong> — hints are disabled; scoring/readiness impacts are stronger.</li>
+          </ul>
+        </section>
+        <section>
+          <h4>Hints</h4>
+          <ul>
+            <li><strong>Hints</strong> (Settings) — choose <em>All</em>, <em>Half</em>, or <em>None</em>. <em>Half</em> reveals up to half the canonical answer; the Hint button will disable once the cap is reached.</li>
+            <li><strong>Give Up</strong> — reveals canonical and example answers for the round.</li>
+          </ul>
+        </section>
+        <section>
+          <h4>Round Flow & Input</h4>
+          <ul>
+            <li>A letter appears on the right and the category on the left. Type answers starting with that letter.</li>
+            <li>Live validation accepts correct answers as you type and shows a green checkmark; correct answers end the round and display examples.</li>
+            <li>After a round ends the Hint button becomes <em>Next Round</em>; press Enter to advance. Auto Advance will move after a short countdown if enabled.</li>
+          </ul>
+        </section>
+        <section>
+          <h4>Scoring & Persistence</h4>
+          <ul>
+            <li>Streak, Best, Correct count, and Rounds are shown in the scoreboard (toggle visibility in Settings).</li>
+            <li>Tournament Readiness (0–100) is shown in the score panel and influences competitive scoring behavior.</li>
+            <li>Settings and filters are saved to <code>localStorage</code> under <code>fastfacts_filters</code>. Scores are saved under <code>fastfacts_score</code>.</li>
+          </ul>
+        </section>
+      </div>
+      <p class="tip">Tip: Use the gear menu for all persistent preferences (mode, hints, auto-advance, scoreboard visibility, theme, reset).</p>
       <div class="modal-actions"><button id="instructionsDoneBtn" class="primary">Got it</button></div>
     </div>
   </div>

@@ -144,6 +144,9 @@ body.light-mode{
 .settings-list .settings-item{margin:0}
 .settings-list .settings-item .dropdown-toggle{width:100%;text-align:left;padding:12px 16px;border-radius:12px}
 
+/* Small circular indicator shown for on/off toggles inside Settings */
+.settings-list .dropdown-toggle{display:block}
+
 /* Slightly reduce the menu padding for the smaller settings menu to keep density */
 #settingsDropdown .dropdown-menu{padding:10px}
 .dropdown-toggle[disabled], .dropdown-toggle.disabled{
@@ -265,6 +268,14 @@ body.light-mode{
   background:var(--control-bg-hover);
   color:var(--control-text);
 }
+
+/* Make action buttons visually dim when disabled */
+.actions button[disabled]{
+  opacity:0.56;
+  cursor:not-allowed;
+  filter:grayscale(0.08);
+  box-shadow:none;
+}
 .example{margin-top:20px;padding:18px;border-radius:18px;border:1px solid rgba(17,68,70,0.04);background:var(--example-start);box-shadow:0 20px 40px rgba(14,84,85,0.04);display:flex;flex-direction:column;flex:1}
 .example.hidden{display:none}
 .timer-row{display:flex;justify-content:space-between;margin-top:12px;color:var(--text-color);font-size:1rem}
@@ -375,11 +386,21 @@ body.light-mode .answer-input:focus{
 
 /* Instructions modal improvements */
 .modal-content{padding:26px;border-radius:16px;max-width:720px;background:linear-gradient(180deg, rgba(2,24,34,0.9), rgba(3,32,46,0.95));border:1px solid rgba(255,255,255,0.04)}
+.modal-content{ /* avoid overflowing viewport: limit height and allow internal scroll */
+  max-height: calc(100vh - 80px);
+  overflow: auto;
+}
 .modal-content h3{font-size:1.25rem;color:var(--accent-2);text-shadow:0 6px 18px rgba(0,0,0,0.4)}
 .muted-note{font-size:0.95rem;color:var(--muted);margin-bottom:10px}
 .instructions-list{margin:8px 0 0 20px;padding:0 6px 0 0;color:var(--text-color);font-weight:700}
 .instructions-list li{margin:8px 0;line-height:1.35}
 .instructions-list li strong{color:var(--accent-2)}
+.instructions-ref{display:grid;grid-template-columns:repeat(2,1fr);gap:18px;margin-top:8px}
+.instructions-ref section{background:transparent;padding:0;margin:0}
+@media (max-width:780px){
+  .instructions-ref{grid-template-columns:1fr;padding-right:8px}
+  .modal-content{max-width:calc(100% - 32px);width:calc(100% - 32px)}
+}
 .modal-content .tip{margin-top:12px;color:var(--muted);font-weight:700}
 .modal-actions .primary{background:var(--accent);color:#012326;box-shadow:0 12px 30px rgba(59,181,255,0.12);padding:10px 14px;border-radius:12px}
 .modal-close{background:rgba(0,0,0,0.12);width:36px;height:36px;border-radius:8px;display:inline-flex;align-items:center;justify-content:center}

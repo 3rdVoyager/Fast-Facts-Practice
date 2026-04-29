@@ -42,13 +42,38 @@ function updateHintButtonUI(){
     return;
   }
   if(mode === 'tournament'){
-    refs.hintBtn.textContent = 'Hint (Disabled in Tournament Mode)';
+    refs.hintBtn.textContent = 'Hint (Disabled)';
     refs.hintBtn.disabled = true;
     return;
   }
-  // not hard: display normal hint state
-  refs.hintBtn.disabled = (state.current.hintCap<=0);
-  refs.hintBtn.textContent = 'Hint';
+  // not hard/tournament: consider Hints setting and current hint progress
+  const hintsSetting = (refs.hintsToggle && refs.hintsToggle.dataset && refs.hintsToggle.dataset.value) ? refs.hintsToggle.dataset.value : 'all';
+  // if explicitly disabled by the Hints control
+  if(hintsSetting === 'none'){
+    refs.hintBtn.textContent = 'Hint (Disabled)';
+    refs.hintBtn.disabled = true;
+    refs.hintBtn.classList.add('disabled');
+    return;
+  }
+
+  // when hints are 'half', disable once we've revealed up to the cap
+  if(hintsSetting === 'half' && state.current.hintCap > 0 && state.current.hintIndex >= state.current.hintCap){
+    refs.hintBtn.textContent = `Hint (${state.current.hintIndex}/${state.current.hintCap})`;
+    refs.hintBtn.disabled = true;
+    refs.hintBtn.classList.add('disabled');
+    return;
+  }
+
+  // otherwise enable if hintCap allows at least one char
+  const enabled = (state.current.hintCap > 0);
+  refs.hintBtn.disabled = !enabled;
+  if(!enabled){
+    refs.hintBtn.textContent = 'Hint (None available)';
+    refs.hintBtn.classList.add('disabled');
+  }else{
+    refs.hintBtn.classList.remove('disabled');
+    refs.hintBtn.textContent = (state.current.hintIndex>0) ? `Hint (${state.current.hintIndex}/${state.current.hintCap})` : 'Hint';
+  }
 }
 
 
@@ -157,6 +182,7 @@ const refs = {
   modeToggle: document.getElementById('modeToggle'),
   modeMenu: document.getElementById('modeMenu'),
   modeList: document.getElementById('modeList'),
+  hintsToggle: document.getElementById('hintsToggle'),
   settingsToggle: document.getElementById('settingsToggle'),
   settingsMenu: document.getElementById('settingsMenu'),
   // displays / inputs
@@ -233,6 +259,8 @@ function populateControls(){
     });
     if(refs.modeToggle){ refs.modeToggle.dataset.value = 'easy'; refs.modeToggle.textContent = 'Mode: Easy'; }
   }
+  // initialize hints toggle if present
+  if(refs.hintsToggle){ refs.hintsToggle.dataset.value = 'all'; refs.hintsToggle.textContent = 'Hints: All'; refs.hintsToggle.setAttribute('aria-pressed','false'); }
 }
 
   /**
@@ -244,8 +272,9 @@ function populateControls(){
         category: (refs.categorySelect && refs.categorySelect.value) ? refs.categorySelect.value : (refs.categoryToggle && refs.categoryToggle.dataset.value) ? refs.categoryToggle.dataset.value : '__random__',
         timer: (refs.timerSelect && refs.timerSelect.value) ? refs.timerSelect.value : (refs.timerToggle && refs.timerToggle.dataset.value) ? refs.timerToggle.dataset.value : '30',
         mode: (refs.modeSelect && refs.modeSelect.value) ? refs.modeSelect.value : (refs.modeToggle && refs.modeToggle.dataset.value) ? refs.modeToggle.dataset.value : 'easy',
-            autoMove: (refs.autoToggle && (refs.autoToggle.dataset.value === 'true' || refs.autoToggle.getAttribute('aria-pressed') === 'true')) ? true : false,
-            showScoreboard: (refs.scoreboardToggle && (refs.scoreboardToggle.dataset.value === 'true' || refs.scoreboardToggle.getAttribute('aria-pressed') === 'true')) ? true : false
+        autoMove: (refs.autoToggle && (refs.autoToggle.dataset.value === 'true' || refs.autoToggle.getAttribute('aria-pressed') === 'true')) ? true : false,
+        showScoreboard: (refs.scoreboardToggle && (refs.scoreboardToggle.dataset.value === 'true' || refs.scoreboardToggle.getAttribute('aria-pressed') === 'true')) ? true : false,
+        hints: (refs.hintsToggle && refs.hintsToggle.dataset && refs.hintsToggle.dataset.value) ? refs.hintsToggle.dataset.value : 'all'
       };
       localStorage.setItem('fastfacts_filters', JSON.stringify(obj));
     }catch(err){
@@ -283,10 +312,16 @@ function populateControls(){
         if(refs.timerToggle){ refs.timerToggle.dataset.value = obj.timer; refs.timerToggle.textContent = (obj.timer === 'off') ? 'Timer: Off ▾' : `Timer: ${obj.timer}s ▾`; }
         if(refs.timerList){ Array.from(refs.timerList.children).forEach(li=> li.classList.toggle('selected', li.dataset.value === String(obj.timer))); }
       }
-      // mode
+      // mode (legacy modes preserved; treat 'tournament' specially)
       if(obj.mode){
         if(refs.modeSelect){ refs.modeSelect.value = obj.mode; }
-        if(refs.modeToggle){ refs.modeToggle.dataset.value = obj.mode; refs.modeToggle.textContent = `Mode: ${obj.mode.charAt(0).toUpperCase()+obj.mode.slice(1)}`; }
+        if(refs.modeToggle){
+          if(obj.mode === 'tournament'){
+            refs.modeToggle.dataset.value = 'tournament'; refs.modeToggle.textContent = 'Tournament Mode: On'; refs.modeToggle.setAttribute('aria-pressed','true');
+          }else{
+            refs.modeToggle.dataset.value = obj.mode; refs.modeToggle.textContent = 'Tournament Mode: Off'; refs.modeToggle.setAttribute('aria-pressed','false');
+          }
+        }
         if(refs.modeList){ Array.from(refs.modeList.children).forEach(li=> li.classList.toggle('selected', li.dataset.value === obj.mode)); }
       }
       // autoMove
@@ -294,18 +329,24 @@ function populateControls(){
         const on = !!obj.autoMove;
         refs.autoToggle.dataset.value = on ? 'true' : 'false';
         refs.autoToggle.setAttribute('aria-pressed', String(on));
-        refs.autoToggle.textContent = on ? 'Auto Move: On' : 'Auto Move: Off';
+        refs.autoToggle.textContent = on ? 'Auto Advance: On' : 'Auto Advance: Off';
       }
       // showScoreboard
       if(typeof obj.showScoreboard !== 'undefined' && refs.scoreboardToggle){
         const on = !!obj.showScoreboard;
         refs.scoreboardToggle.dataset.value = on ? 'true' : 'false';
         refs.scoreboardToggle.setAttribute('aria-pressed', String(on));
-        refs.scoreboardToggle.textContent = on ? 'Show Scoreboard: On' : 'Show Scoreboard: Off';
+        refs.scoreboardToggle.textContent = on ? 'Scoreboard: On' : 'Scoreboard: Off';
         applyScoreboardVisibility(on);
       } else {
         // default: show scoreboard
         applyScoreboardVisibility(true);
+      }
+      // hints setting
+      if(obj.hints && refs.hintsToggle){
+        refs.hintsToggle.dataset.value = obj.hints;
+        refs.hintsToggle.textContent = `Hints: ${obj.hints.charAt(0).toUpperCase()+obj.hints.slice(1)}`;
+        refs.hintsToggle.setAttribute('aria-pressed','true');
       }
         // apply any mode effects that should run after loading persisted filters
         const loadedMode = (refs.modeSelect && refs.modeSelect.value) ? refs.modeSelect.value : (refs.modeToggle && refs.modeToggle.dataset && refs.modeToggle.dataset.value) ? refs.modeToggle.dataset.value : 'easy';
@@ -528,12 +569,17 @@ function nextRound(){
   state.current.canonical = canonical;
   state.current.hintIndex = 0;
 
-  // establish hint cap depending on mode (support native select or custom toggle)
+  // establish hint cap depending on Hints setting, but respect Hard/Tournament disabling
   const mode = (refs.modeSelect && refs.modeSelect.value) ? refs.modeSelect.value : (refs.modeToggle && refs.modeToggle.dataset.value) ? refs.modeToggle.dataset.value : 'easy';
   const fullLen = String(canonical).length;
-  if(mode === 'easy') state.current.hintCap = fullLen;
-  else if(mode === 'medium') state.current.hintCap = Math.floor(fullLen/2); // allow hints up to half the word (rounded down)
-  else state.current.hintCap = 0; // hard: no hints
+  const hintsSetting = (refs.hintsToggle && refs.hintsToggle.dataset && refs.hintsToggle.dataset.value) ? refs.hintsToggle.dataset.value : 'all';
+  if(mode === 'hard' || mode === 'tournament'){
+    state.current.hintCap = 0;
+  }else{
+    if(hintsSetting === 'all') state.current.hintCap = fullLen;
+    else if(hintsSetting === 'half') state.current.hintCap = Math.floor(fullLen/2);
+    else state.current.hintCap = 0;
+  }
 
   // timer setup (support native select or custom toggle)
   const rawTimerVal = (refs.timerSelect && refs.timerSelect.value) ? refs.timerSelect.value : (refs.timerToggle && refs.timerToggle.dataset.value) ? refs.timerToggle.dataset.value : '30';
@@ -843,7 +889,33 @@ if(refs.autoToggle){
     const next = !cur;
     refs.autoToggle.dataset.value = next ? 'true' : 'false';
     refs.autoToggle.setAttribute('aria-pressed', String(next));
-    refs.autoToggle.textContent = next ? 'Auto Move: On' : 'Auto Move: Off';
+    refs.autoToggle.textContent = next ? 'Auto Advance: On' : 'Auto Advance: Off';
+    saveFiltersToStorage();
+  });
+}
+
+// Hints toggle wiring (All / Half / None)
+if(refs.hintsToggle){
+  refs.hintsToggle.addEventListener('click', ()=>{
+    const options = ['all','half','none'];
+    const cur = refs.hintsToggle.dataset && refs.hintsToggle.dataset.value ? refs.hintsToggle.dataset.value : 'all';
+    const idx = options.indexOf(cur);
+    const next = options[(idx+1) % options.length];
+    refs.hintsToggle.dataset.value = next;
+    refs.hintsToggle.textContent = `Hints: ${next.charAt(0).toUpperCase()+next.slice(1)}`;
+    refs.hintsToggle.setAttribute('aria-pressed','true');
+    // apply immediately for current round (unless hard/tournament forces none)
+    const canonical = state.current.canonical || '';
+    const fullLen = String(canonical).length;
+    const mode = getCurrentMode();
+    if(mode === 'hard' || mode === 'tournament'){
+      state.current.hintCap = 0;
+    }else{
+      if(next === 'all') state.current.hintCap = fullLen;
+      else if(next === 'half') state.current.hintCap = Math.floor(fullLen/2);
+      else state.current.hintCap = 0;
+    }
+    updateHintButtonUI();
     saveFiltersToStorage();
   });
 }
@@ -855,7 +927,7 @@ if(refs.scoreboardToggle){
     const next = !cur;
     refs.scoreboardToggle.dataset.value = next ? 'true' : 'false';
     refs.scoreboardToggle.setAttribute('aria-pressed', String(next));
-    refs.scoreboardToggle.textContent = next ? 'Show Scoreboard: On' : 'Show Scoreboard: Off';
+    refs.scoreboardToggle.textContent = next ? 'Scoreboard: On' : 'Scoreboard: Off';
     applyScoreboardVisibility(next);
     saveFiltersToStorage();
   });
@@ -1067,26 +1139,32 @@ if(refs.modeToggle && refs.modeMenu && refs.modeList){
     nextRound();
   });
 } else if(refs.modeToggle && !refs.modeList){
-  // cycling button inside Settings (includes Tournament)
-  const _modes = ['easy','medium','hard','tournament'];
-  const setModeUI = (m)=>{
-    refs.modeToggle.dataset.value = m;
-    refs.modeToggle.textContent = `Mode: ${m.charAt(0).toUpperCase()+m.slice(1)}`;
-    // apply UI effects that depend on mode
-    applyModeEffects(m);
-  };
-  // ensure a default
-  if(!refs.modeToggle.dataset || !refs.modeToggle.dataset.value) setModeUI('easy');
+  // Simple Tournament toggle: clicking turns Tournament ON/OFF
+  // default to Off unless previously set
+  if(!refs.modeToggle.dataset || !refs.modeToggle.dataset.value) { refs.modeToggle.dataset.value = 'easy'; refs.modeToggle.textContent = 'Tournament Mode: Off'; refs.modeToggle.setAttribute('aria-pressed','false'); }
   refs.modeToggle.addEventListener('click', ()=>{
     const cur = refs.modeToggle.dataset.value || 'easy';
-    const idx = _modes.indexOf(cur);
-    const next = _modes[(idx+1)%_modes.length];
-    setModeUI(next);
-    // persist and reset scores/sessions when mode changes
-    saveFiltersToStorage();
-    resetScore();
-    showToast(`Switched mode to ${next.charAt(0).toUpperCase()+next.slice(1)}; scores reset`);
-    nextRound();
+    if(cur === 'tournament'){
+      // turn tournament off -> revert to easy
+      refs.modeToggle.dataset.value = 'easy';
+      refs.modeToggle.textContent = 'Tournament Mode: Off';
+      refs.modeToggle.setAttribute('aria-pressed','false');
+      applyModeEffects('easy');
+      saveFiltersToStorage();
+      resetScore();
+      showToast('Tournament mode disabled; scores reset');
+      nextRound();
+    }else{
+      // enable tournament
+      refs.modeToggle.dataset.value = 'tournament';
+      refs.modeToggle.textContent = 'Tournament Mode: On';
+      refs.modeToggle.setAttribute('aria-pressed','true');
+      applyModeEffects('tournament');
+      saveFiltersToStorage();
+      resetScore();
+      showToast('Tournament mode enabled; scores reset');
+      nextRound();
+    }
   });
 }
 
@@ -1112,9 +1190,27 @@ function applyModeEffects(mode){
   }
   // Auto-move: force on in tournament but disable toggle so user can't change
   if(refs.autoToggle){
-    if(isTournament){ refs.autoToggle.dataset.value = 'true'; refs.autoToggle.setAttribute('aria-pressed','true'); refs.autoToggle.textContent = 'Auto Move: On'; }
+    if(isTournament){ refs.autoToggle.dataset.value = 'true'; refs.autoToggle.setAttribute('aria-pressed','true'); refs.autoToggle.textContent = 'Auto Advance: On'; }
     refs.autoToggle.disabled = isTournament;
     refs.autoToggle.classList.toggle('disabled', isTournament);
+  }
+  // Hints toggle: tournament forces 'none' and disables the control
+  if(refs.hintsToggle){
+    if(isTournament){
+      // store previous hints selection so we can restore when leaving tournament
+      if(typeof refs.hintsToggle.dataset.value !== 'undefined') refs.hintsToggle.dataset.prevHints = refs.hintsToggle.dataset.value;
+      refs.hintsToggle.dataset.value = 'none';
+      refs.hintsToggle.textContent = 'Hints: None';
+      refs.hintsToggle.disabled = true;
+      refs.hintsToggle.classList.add('disabled');
+    }else{
+      // restore previous or keep current
+      const restore = refs.hintsToggle.dataset.prevHints || refs.hintsToggle.dataset.value || 'all';
+      refs.hintsToggle.dataset.value = restore;
+      refs.hintsToggle.textContent = `Hints: ${restore.charAt(0).toUpperCase()+restore.slice(1)}`;
+      refs.hintsToggle.disabled = false;
+      refs.hintsToggle.classList.remove('disabled');
+    }
   }
   // Ensure hint button label updates immediately
   updateHintButtonUI();
