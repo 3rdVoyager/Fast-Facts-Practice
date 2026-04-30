@@ -141,9 +141,19 @@ function sanitizeData(rawData){
 }
 
 // ----------------------------- App state -----------------------------
+// ----------------------------- Configuration -----------------------------
+// Small set of tunable values for quick edits
+const CONFIG = {
+  DEFAULT_TIMER_SEC: 30,        // default timer value shown in UI (seconds)
+  TOURNAMENT_TIMER_SEC: 30,     // timer enforced when Tournament is active (seconds)
+  READINESS_SCALE: 1000,       // maximum readiness value (e.g., 100 or 1000)
+  READINESS_THRESHOLDS: { low: 400, mid: 700 }, // color change thresholds on the above scale
+  AUTO_MOVE_DELAY_MS: 5000     // ms delay before auto-advancing after correct
+};
 const state = {
   data: null, // loaded JSON data
   categories: [], // category names
+  paused: false,
   current: {
     category: null,
     letter: null,
@@ -158,8 +168,7 @@ const state = {
   }
 };
 
-// Auto-move default delay (ms)
-const AUTO_MOVE_DELAY_MS = 5000;
+// NOTE: use `CONFIG.AUTO_MOVE_DELAY_MS` where needed
 
 // ----------------------------- DOM references -----------------------------
 const refs = {
@@ -207,6 +216,7 @@ const refs = {
   toastContainer: document.getElementById('toastContainer'),
   readinessItem: document.getElementById('readinessItem'),
   readinessScore: document.getElementById('readinessScore'),
+  pauseToggle: document.getElementById('pauseToggle'),
   instructionsBtn: document.getElementById('instructionsBtn'),
   instructionsModal: document.getElementById('instructionsModal'),
   instructionsCloseBtn: document.getElementById('instructionsCloseBtn'),
@@ -236,10 +246,10 @@ function populateControls(){
         li.textContent = `${t}s`;
         li.dataset.value = String(t);
       }
-      if(t===30) li.classList.add('selected');
+      if(t===CONFIG.DEFAULT_TIMER_SEC) li.classList.add('selected');
       refs.timerList.appendChild(li);
     });
-    if(refs.timerToggle){ refs.timerToggle.dataset.value = '30'; refs.timerToggle.textContent = '30s ▾'; }
+    if(refs.timerToggle){ refs.timerToggle.dataset.value = String(CONFIG.DEFAULT_TIMER_SEC); refs.timerToggle.textContent = `${CONFIG.DEFAULT_TIMER_SEC}s ▾`; }
   }
 
   // modes: only Tournament is exposed via Settings
@@ -265,7 +275,7 @@ function populateControls(){
     try{
       const obj = {
         category: (refs.categorySelect && refs.categorySelect.value) ? refs.categorySelect.value : (refs.categoryToggle && refs.categoryToggle.dataset.value) ? refs.categoryToggle.dataset.value : '__random__',
-        timer: (refs.timerSelect && refs.timerSelect.value) ? refs.timerSelect.value : (refs.timerToggle && refs.timerToggle.dataset.value) ? refs.timerToggle.dataset.value : '30',
+        timer: (refs.timerSelect && refs.timerSelect.value) ? refs.timerSelect.value : (refs.timerToggle && refs.timerToggle.dataset.value) ? refs.timerToggle.dataset.value : String(CONFIG.DEFAULT_TIMER_SEC),
           mode: (refs.modeSelect && refs.modeSelect.value) ? refs.modeSelect.value : (refs.modeToggle && refs.modeToggle.dataset.value) ? refs.modeToggle.dataset.value : 'standard',
         autoMove: (refs.autoToggle && (refs.autoToggle.dataset.value === 'true' || refs.autoToggle.getAttribute('aria-pressed') === 'true')) ? true : false,
         showScoreboard: (refs.scoreboardToggle && (refs.scoreboardToggle.dataset.value === 'true' || refs.scoreboardToggle.getAttribute('aria-pressed') === 'true')) ? true : false,
@@ -422,9 +432,9 @@ function updateScoreUI(){
   if(refs.readinessScore) refs.readinessScore.textContent = r;
     if(refs.readinessItem){
     refs.readinessItem.classList.remove('readiness-low','readiness-mid','readiness-high');
-    // thresholds scaled to 0..1000
-    if(r < 400) refs.readinessItem.classList.add('readiness-low');
-    else if(r < 700) refs.readinessItem.classList.add('readiness-mid');
+    // thresholds scaled to configured max
+    if(r < CONFIG.READINESS_THRESHOLDS.low) refs.readinessItem.classList.add('readiness-low');
+    else if(r < CONFIG.READINESS_THRESHOLDS.mid) refs.readinessItem.classList.add('readiness-mid');
     else refs.readinessItem.classList.add('readiness-high');
   }
 }
@@ -466,11 +476,11 @@ function computeReadiness(){
   const rounds = s.rounds || 0;
   const accuracy = rounds > 0 ? ((s.totalCorrect || 0)/rounds) : 0;
   const streakFactor = Math.min((s.bestStreak || 0),10)/10;
-  let val = Math.round((0.75*accuracy + 0.25*streakFactor)*1000);
+  let val = Math.round((0.75*accuracy + 0.25*streakFactor) * CONFIG.READINESS_SCALE);
   // when there have been no rounds yet, readiness is 0
   if(rounds === 0) val = 0;
   if(val < 0) val = 0;
-  if(val > 1000) val = 1000;
+  if(val > CONFIG.READINESS_SCALE) val = CONFIG.READINESS_SCALE;
   return val;
 }
 
@@ -578,7 +588,7 @@ function nextRound(){
   }
 
   // timer setup (support native select or custom toggle)
-  const rawTimerVal = (refs.timerSelect && refs.timerSelect.value) ? refs.timerSelect.value : (refs.timerToggle && refs.timerToggle.dataset.value) ? refs.timerToggle.dataset.value : '30';
+  const rawTimerVal = (refs.timerSelect && refs.timerSelect.value) ? refs.timerSelect.value : (refs.timerToggle && refs.timerToggle.dataset.value) ? refs.timerToggle.dataset.value : String(CONFIG.DEFAULT_TIMER_SEC);
   if(rawTimerVal === 'off' || rawTimerVal === '0'){
     state.current.timerMs = 0; // timer disabled
     state.current.timeLeft = 0;
@@ -645,6 +655,39 @@ function renderTimer(){
   refs.progressBar.style.width = `${pct}%`;
 }
 
+/**
+ * Pause or resume the app timers (main timer and auto-move countdown).
+ * When paused, stores the remaining auto-move ms so it can resume.
+ * @param {boolean} p
+ */
+function setPaused(p){
+  state.paused = !!p;
+  if(refs.pauseToggle){
+    if(state.paused){ refs.pauseToggle.textContent = '▶ Resume'; refs.pauseToggle.setAttribute('aria-pressed','true'); }
+    else { refs.pauseToggle.textContent = '⏸️ Pause'; refs.pauseToggle.setAttribute('aria-pressed','false'); }
+  }
+  if(state.paused){
+    // stop the visible timer
+    stopTimer();
+    // pause any pending auto-move countdown
+    if(state.current.nextTimeout){
+      // compute remaining if we have recorded end
+      if(state.current.nextEnd) state.current.nextRemainingMs = Math.max(0, state.current.nextEnd - Date.now());
+      clearNextTimeout();
+    }
+    showToast('Paused');
+  }else{
+    // resume main timer if applicable
+    if(state.current.timerMs && state.current.timeLeft > 0) startTimer();
+    // resume auto-move if we had remaining time saved
+    if(state.current.nextRemainingMs && state.current.nextRemainingMs > 100){
+      startAutoCountdown(state.current.nextRemainingMs);
+      state.current.nextRemainingMs = null;
+    }
+    showToast('Resumed');
+  }
+}
+
 // ----------------------------- Hint & Reveal -----------------------------
 /**
  * Reveal the next prefix of the canonical answer, up to the limit (hintCap).
@@ -685,7 +728,7 @@ function revealAnswer(reason){
   // transform hint -> Next Round so the user can advance after revealing
   transformButtonsToNext();
   if(refs.autoToggle && (refs.autoToggle.dataset.value === 'true' || refs.autoToggle.getAttribute('aria-pressed') === 'true')){
-    startAutoCountdown(AUTO_MOVE_DELAY_MS);
+    startAutoCountdown(CONFIG.AUTO_MOVE_DELAY_MS);
   }
 }
 
@@ -805,7 +848,7 @@ function handleCorrectMatch(matched, reason){
   try{ finalizeRound('correct'); }catch(e){}
   // if auto-move is enabled, schedule a short automatic advance with countdown
   if(refs.autoToggle && (refs.autoToggle.dataset.value === 'true' || refs.autoToggle.getAttribute('aria-pressed') === 'true')){
-    startAutoCountdown(AUTO_MOVE_DELAY_MS);
+    startAutoCountdown(CONFIG.AUTO_MOVE_DELAY_MS);
   }
 
   // add a brief pulse to emphasize the correct input
@@ -824,6 +867,9 @@ function clearNextTimeout(){
     clearInterval(state.current.nextCountdownInterval);
     state.current.nextCountdownInterval = null;
   }
+  // clear any recorded end/remaining markers
+  state.current.nextEnd = null;
+  state.current.nextRemainingMs = null;
 }
 
 
@@ -835,6 +881,8 @@ function startAutoCountdown(ms){
   clearNextTimeout();
   if(!refs.hintBtn) return;
   const end = Date.now() + ms;
+  // record scheduled end so pause/resume can compute remaining time
+  state.current.nextEnd = end;
   // schedule the actual advance
   state.current.nextTimeout = setTimeout(()=>{
     state.current.nextTimeout = null;
@@ -877,6 +925,13 @@ refs.hintBtn.addEventListener('click', ()=>{
   }
   giveHint();
 });
+
+// Pause/Resume toggle wiring
+if(refs.pauseToggle){
+  refs.pauseToggle.addEventListener('click', ()=>{
+    setPaused(!state.paused);
+  });
+}
 
 // Auto-move toggle wiring
 if(refs.autoToggle){
@@ -1089,7 +1144,7 @@ if(refs.timerToggle && refs.timerMenu && refs.timerList){
     const li = e.target.closest('li'); if(!li) return;
     Array.from(refs.timerList.children).forEach(c=>c.classList.remove('selected'));
     li.classList.add('selected');
-    const val = li.dataset.value || '30';
+    const val = li.dataset.value || String(CONFIG.DEFAULT_TIMER_SEC);
     refs.timerToggle.dataset.value = val;
     if(val === 'off') refs.timerToggle.textContent = `Timer: Off ▾`;
     else refs.timerToggle.textContent = `Timer: ${val}s ▾`;
@@ -1180,8 +1235,8 @@ function applyModeEffects(mode){
   if(refs.timerToggle){
     refs.timerToggle.disabled = isTournament;
     refs.timerToggle.classList.toggle('disabled', isTournament);
-    if(isTournament){ refs.timerToggle.dataset.value = '30'; refs.timerToggle.textContent = 'Timer: 30s ▾';
-      if(refs.timerList) Array.from(refs.timerList.children).forEach(li=> li.classList.toggle('selected', li.dataset.value === '30'));
+    if(isTournament){ refs.timerToggle.dataset.value = String(CONFIG.TOURNAMENT_TIMER_SEC); refs.timerToggle.textContent = `Timer: ${CONFIG.TOURNAMENT_TIMER_SEC}s ▾`;
+      if(refs.timerList) Array.from(refs.timerList.children).forEach(li=> li.classList.toggle('selected', li.dataset.value === String(CONFIG.TOURNAMENT_TIMER_SEC)));
     }
   }
   // Auto-move: force on in tournament but disable toggle so user can't change
