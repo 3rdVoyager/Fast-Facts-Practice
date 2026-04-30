@@ -4,8 +4,8 @@ This is a lightweight Fast Facts practice web app (vanilla HTML/CSS/JS) intended
 
 Recent UI/behavior notes:
 - Settings moved to a right-aligned gear menu in the header.
-- Tournament mode is a single toggle (On/Off) in Settings; when enabled it locks filters and enforces competitive defaults (random category, 20s timer, Auto Advance enabled) and disables hints.
-- Hints are now a per-round setting in Settings with options: All / Half / None. Tournament and Hard modes force hints to None.
+- Tournament mode is a single toggle (On/Off) in Settings; when enabled it locks filters and enforces competitive defaults (random category, 30s timer, Auto Advance enabled) and disables hints.
+- Hints are now a per-round setting in Settings with options: All / Half / None. Tournament mode forces hints to None.
 - Scoreboard visibility is controlled via Settings and persists across reloads.
 - Auto Advance, Reset Scores, and Dark/Light theme are available from Settings.
 

@@ -29,24 +29,20 @@ function normalize(s){
 }
 // Helper: read the current mode from native select or custom toggle
 function getCurrentMode(){
-  return (refs.modeSelect && refs.modeSelect.value) ? refs.modeSelect.value : (refs.modeToggle && refs.modeToggle.dataset && refs.modeToggle.dataset.value) ? refs.modeToggle.dataset.value : 'easy';
+  return (refs.modeSelect && refs.modeSelect.value) ? refs.modeSelect.value : (refs.modeToggle && refs.modeToggle.dataset && refs.modeToggle.dataset.value) ? refs.modeToggle.dataset.value : 'standard';
 }
 
 // Helper: update the Hint button label and disabled state depending on mode and hintCap
 function updateHintButtonUI(){
   if(!refs.hintBtn) return;
   const mode = getCurrentMode();
-  if(mode === 'hard'){
-    refs.hintBtn.textContent = 'Hint (Disabled in Hard Mode)';
-    refs.hintBtn.disabled = true;
-    return;
-  }
+  // hints are disabled by Tournament mode
   if(mode === 'tournament'){
     refs.hintBtn.textContent = 'Hint (Disabled)';
     refs.hintBtn.disabled = true;
     return;
   }
-  // not hard/tournament: consider Hints setting and current hint progress
+  // not tournament: consider Hints setting and current hint progress
   const hintsSetting = (refs.hintsToggle && refs.hintsToggle.dataset && refs.hintsToggle.dataset.value) ? refs.hintsToggle.dataset.value : 'all';
   // if explicitly disabled by the Hints control
   if(hintsSetting === 'none'){
@@ -246,18 +242,17 @@ function populateControls(){
     if(refs.timerToggle){ refs.timerToggle.dataset.value = '30'; refs.timerToggle.textContent = '30s ▾'; }
   }
 
-  // modes
-  const modes = [{v:'easy',label:'Easy'},{v:'medium',label:'Medium'},{v:'hard',label:'Hard'},{v:'tournament',label:'Tournament'}];
+  // modes: only Tournament is exposed via Settings
+  const modes = [{v:'tournament',label:'Tournament'}];
   if(refs.modeList){
     refs.modeList.innerHTML = '';
     modes.forEach((m, idx)=>{
       const li = document.createElement('li');
       li.textContent = m.label;
       li.dataset.value = m.v;
-      if(m.v==='easy') li.classList.add('selected');
       refs.modeList.appendChild(li);
     });
-    if(refs.modeToggle){ refs.modeToggle.dataset.value = 'easy'; refs.modeToggle.textContent = 'Mode: Easy'; }
+    if(refs.modeToggle){ refs.modeToggle.dataset.value = 'standard'; refs.modeToggle.textContent = 'Tournament: Off'; }
   }
   // initialize hints toggle if present
   if(refs.hintsToggle){ refs.hintsToggle.dataset.value = 'all'; refs.hintsToggle.textContent = 'Hints: All'; refs.hintsToggle.setAttribute('aria-pressed','false'); }
@@ -271,7 +266,7 @@ function populateControls(){
       const obj = {
         category: (refs.categorySelect && refs.categorySelect.value) ? refs.categorySelect.value : (refs.categoryToggle && refs.categoryToggle.dataset.value) ? refs.categoryToggle.dataset.value : '__random__',
         timer: (refs.timerSelect && refs.timerSelect.value) ? refs.timerSelect.value : (refs.timerToggle && refs.timerToggle.dataset.value) ? refs.timerToggle.dataset.value : '30',
-        mode: (refs.modeSelect && refs.modeSelect.value) ? refs.modeSelect.value : (refs.modeToggle && refs.modeToggle.dataset.value) ? refs.modeToggle.dataset.value : 'easy',
+          mode: (refs.modeSelect && refs.modeSelect.value) ? refs.modeSelect.value : (refs.modeToggle && refs.modeToggle.dataset.value) ? refs.modeToggle.dataset.value : 'standard',
         autoMove: (refs.autoToggle && (refs.autoToggle.dataset.value === 'true' || refs.autoToggle.getAttribute('aria-pressed') === 'true')) ? true : false,
         showScoreboard: (refs.scoreboardToggle && (refs.scoreboardToggle.dataset.value === 'true' || refs.scoreboardToggle.getAttribute('aria-pressed') === 'true')) ? true : false,
         hints: (refs.hintsToggle && refs.hintsToggle.dataset && refs.hintsToggle.dataset.value) ? refs.hintsToggle.dataset.value : 'all'
@@ -349,7 +344,7 @@ function populateControls(){
         refs.hintsToggle.setAttribute('aria-pressed','true');
       }
         // apply any mode effects that should run after loading persisted filters
-        const loadedMode = (refs.modeSelect && refs.modeSelect.value) ? refs.modeSelect.value : (refs.modeToggle && refs.modeToggle.dataset && refs.modeToggle.dataset.value) ? refs.modeToggle.dataset.value : 'easy';
+          const loadedMode = (refs.modeSelect && refs.modeSelect.value) ? refs.modeSelect.value : (refs.modeToggle && refs.modeToggle.dataset && refs.modeToggle.dataset.value) ? refs.modeToggle.dataset.value : 'standard';
         applyModeEffects(loadedMode);
     }catch(err){ console.warn('Could not load filters', err); }
   }
@@ -421,7 +416,7 @@ function updateScoreUI(){
   refs.bestStreak.textContent = state.score.bestStreak || 0;
   refs.totalCorrect.textContent = state.score.totalCorrect || 0;
   refs.roundCount.textContent = state.score.rounds || 0;
-  // Readiness metric visible in all modes (most accurate in Tournament/Hard)
+  // Readiness metric visible in all modes (most accurate in Tournament)
   if(refs.readinessItem) refs.readinessItem.style.display = '';
   const r = computeReadiness();
   if(refs.readinessScore) refs.readinessScore.textContent = r;
@@ -569,11 +564,11 @@ function nextRound(){
   state.current.canonical = canonical;
   state.current.hintIndex = 0;
 
-  // establish hint cap depending on Hints setting, but respect Hard/Tournament disabling
-  const mode = (refs.modeSelect && refs.modeSelect.value) ? refs.modeSelect.value : (refs.modeToggle && refs.modeToggle.dataset.value) ? refs.modeToggle.dataset.value : 'easy';
+  // establish hint cap depending on Hints setting, but respect Tournament disabling
+  const mode = (refs.modeSelect && refs.modeSelect.value) ? refs.modeSelect.value : (refs.modeToggle && refs.modeToggle.dataset.value) ? refs.modeToggle.dataset.value : 'standard';
   const fullLen = String(canonical).length;
   const hintsSetting = (refs.hintsToggle && refs.hintsToggle.dataset && refs.hintsToggle.dataset.value) ? refs.hintsToggle.dataset.value : 'all';
-  if(mode === 'hard' || mode === 'tournament'){
+  if(mode === 'tournament'){
     state.current.hintCap = 0;
   }else{
     if(hintsSetting === 'all') state.current.hintCap = fullLen;
@@ -737,7 +732,7 @@ function transformButtonsToNext(){
 function revertButtonsFromNext(){
   if(!refs.hintBtn) return;
   delete refs.hintBtn.dataset.mode;
-  // update text to reflect current mode (hard mode disables hints)
+  // update text to reflect current mode (Tournament disables hints)
   updateHintButtonUI();
   refs.hintBtn.classList.remove('next-mode');
   if(refs.revealBtn) refs.revealBtn.style.display = 'inline-block';
@@ -904,11 +899,11 @@ if(refs.hintsToggle){
     refs.hintsToggle.dataset.value = next;
     refs.hintsToggle.textContent = `Hints: ${next.charAt(0).toUpperCase()+next.slice(1)}`;
     refs.hintsToggle.setAttribute('aria-pressed','true');
-    // apply immediately for current round (unless hard/tournament forces none)
+    // apply immediately for current round (unless Tournament forces none)
     const canonical = state.current.canonical || '';
     const fullLen = String(canonical).length;
     const mode = getCurrentMode();
-    if(mode === 'hard' || mode === 'tournament'){
+    if(mode === 'tournament'){
       state.current.hintCap = 0;
     }else{
       if(next === 'all') state.current.hintCap = fullLen;
@@ -1126,7 +1121,7 @@ if(refs.modeToggle && refs.modeMenu && refs.modeList){
     const li = e.target.closest('li'); if(!li) return;
     Array.from(refs.modeList.children).forEach(c=>c.classList.remove('selected'));
     li.classList.add('selected');
-    const val = li.dataset.value || 'easy';
+    const val = li.dataset.value || 'standard';
     refs.modeToggle.dataset.value = val;
     refs.modeToggle.textContent = `Mode: ${li.textContent} ▾`;
     // apply any UI effects for this mode (e.g., tournament locks)
@@ -1141,15 +1136,15 @@ if(refs.modeToggle && refs.modeMenu && refs.modeList){
 } else if(refs.modeToggle && !refs.modeList){
   // Simple Tournament toggle: clicking turns Tournament ON/OFF
   // default to Off unless previously set
-  if(!refs.modeToggle.dataset || !refs.modeToggle.dataset.value) { refs.modeToggle.dataset.value = 'easy'; refs.modeToggle.textContent = 'Tournament Mode: Off'; refs.modeToggle.setAttribute('aria-pressed','false'); }
+  if(!refs.modeToggle.dataset || !refs.modeToggle.dataset.value) { refs.modeToggle.dataset.value = 'standard'; refs.modeToggle.textContent = 'Tournament Mode: Off'; refs.modeToggle.setAttribute('aria-pressed','false'); }
   refs.modeToggle.addEventListener('click', ()=>{
-    const cur = refs.modeToggle.dataset.value || 'easy';
+    const cur = refs.modeToggle.dataset.value || 'standard';
     if(cur === 'tournament'){
-      // turn tournament off -> revert to easy
-      refs.modeToggle.dataset.value = 'easy';
+      // turn tournament off -> revert to standard
+      refs.modeToggle.dataset.value = 'standard';
       refs.modeToggle.textContent = 'Tournament Mode: Off';
       refs.modeToggle.setAttribute('aria-pressed','false');
-      applyModeEffects('easy');
+      applyModeEffects('standard');
       saveFiltersToStorage();
       resetScore();
       showToast('Tournament mode disabled; scores reset');
@@ -1184,8 +1179,8 @@ function applyModeEffects(mode){
   if(refs.timerToggle){
     refs.timerToggle.disabled = isTournament;
     refs.timerToggle.classList.toggle('disabled', isTournament);
-    if(isTournament){ refs.timerToggle.dataset.value = '20'; refs.timerToggle.textContent = 'Timer: 20s ▾';
-      if(refs.timerList) Array.from(refs.timerList.children).forEach(li=> li.classList.toggle('selected', li.dataset.value === '20'));
+    if(isTournament){ refs.timerToggle.dataset.value = '30'; refs.timerToggle.textContent = 'Timer: 30s ▾';
+      if(refs.timerList) Array.from(refs.timerList.children).forEach(li=> li.classList.toggle('selected', li.dataset.value === '30'));
     }
   }
   // Auto-move: force on in tournament but disable toggle so user can't change
