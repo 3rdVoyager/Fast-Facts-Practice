@@ -420,10 +420,11 @@ function updateScoreUI(){
   if(refs.readinessItem) refs.readinessItem.style.display = '';
   const r = computeReadiness();
   if(refs.readinessScore) refs.readinessScore.textContent = r;
-  if(refs.readinessItem){
+    if(refs.readinessItem){
     refs.readinessItem.classList.remove('readiness-low','readiness-mid','readiness-high');
-    if(r < 40) refs.readinessItem.classList.add('readiness-low');
-    else if(r < 70) refs.readinessItem.classList.add('readiness-mid');
+    // thresholds scaled to 0..1000
+    if(r < 400) refs.readinessItem.classList.add('readiness-low');
+    else if(r < 700) refs.readinessItem.classList.add('readiness-mid');
     else refs.readinessItem.classList.add('readiness-high');
   }
 }
@@ -458,18 +459,18 @@ function finalizeRound(result){
  * Formula (simple heuristic):
  * - accuracy = totalCorrect / rounds (0..1)
  * - streakFactor = min(bestStreak,10)/10 (0..1)
- * readiness = clamp(round((0.75*accuracy + 0.25*streakFactor)*100), 1, 100)
+ * readiness = clamp(round((0.75*accuracy + 0.25*streakFactor)*1000), 1, 1000)
  */
 function computeReadiness(){
   const s = state.score || {};
   const rounds = s.rounds || 0;
   const accuracy = rounds > 0 ? ((s.totalCorrect || 0)/rounds) : 0;
   const streakFactor = Math.min((s.bestStreak || 0),10)/10;
-  let val = Math.round((0.75*accuracy + 0.25*streakFactor)*100);
+  let val = Math.round((0.75*accuracy + 0.25*streakFactor)*1000);
   // when there have been no rounds yet, readiness is 0
   if(rounds === 0) val = 0;
   if(val < 0) val = 0;
-  if(val > 100) val = 100;
+  if(val > 1000) val = 1000;
   return val;
 }
 
@@ -1209,10 +1210,9 @@ function applyModeEffects(mode){
   }
   // Ensure hint button label updates immediately
   updateHintButtonUI();
-  // show or hide tournament banner
-  if(refs.modeBanner){
-    if(isTournament){ refs.modeBanner.textContent = 'Tournament mode — filters locked'; refs.modeBanner.classList.add('show'); }
-    else { refs.modeBanner.classList.remove('show'); }
+  // Temporary toast to notify user that Tournament enforces locked filters
+  if(isTournament){
+    showToast('Tournament mode enabled — filters locked');
   }
   // Persist the forced changes
   saveFiltersToStorage();
