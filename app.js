@@ -663,8 +663,13 @@ function renderTimer(){
 function setPaused(p){
   state.paused = !!p;
   if(refs.pauseToggle){
-    if(state.paused){ refs.pauseToggle.textContent = '▶ Resume'; refs.pauseToggle.setAttribute('aria-pressed','true'); }
-    else { refs.pauseToggle.textContent = '⏸️ Pause'; refs.pauseToggle.setAttribute('aria-pressed','false'); }
+    if(state.paused){
+      refs.pauseToggle.textContent = '▶';
+      refs.pauseToggle.setAttribute('aria-pressed','true');
+    } else {
+      refs.pauseToggle.textContent = '⏸';
+      refs.pauseToggle.setAttribute('aria-pressed','false');
+    }
   }
   if(state.paused){
     // stop the visible timer

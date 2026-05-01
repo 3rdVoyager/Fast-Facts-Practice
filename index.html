@@ -14,19 +14,24 @@
     -->
 
     <header class="app-header">
-      <div class="brand">Fast Facts Practice</div>
+      <div class="header-left">
+        <div class="brand">Fast Facts Practice</div>
+        <button id="pauseToggle" class="dropdown-toggle pause-toggle header-btn" aria-pressed="false" title="Pause/Resume" aria-label="Pause or resume">⏸</button>
+      </div>
       <div class="header-right">
         <!-- Filters moved into header; they sit left of the theme toggle and the whole block is aligned right -->
-        <button id="pauseToggle" class="dropdown-toggle pause-toggle" aria-pressed="false" title="Pause/Resume">⏸️ Pause</button>
         <div class="header-readiness">
           <div class="score-item readiness-item" id="readinessItem" role="status" aria-live="polite"><strong>Tournament Readiness:</strong>
             <span id="readinessScore" class="readiness-score">0</span>
           </div>
         </div>
+        <div class="mode-control header-mode-control">
+          <button id="modeToggle" class="mode-toggle header-btn" aria-pressed="false">Tournament: Off</button>
+        </div>
         <div class="filters-bar">
           <div class="controls">
             <div class="dropdown" id="categoryDropdown">
-              <button id="categoryToggle" class="dropdown-toggle" aria-expanded="false">Category: Random ▾</button>
+              <button id="categoryToggle" class="dropdown-toggle header-btn" aria-expanded="false">Category: Random ▾</button>
               <div id="categoryMenu" class="dropdown-menu" aria-hidden="true">
                 <div class="dropdown-header">Category</div>
                 <ul id="categoryList" class="dropdown-list">
@@ -35,7 +40,7 @@
               </div>
             </div>
             <div class="dropdown" id="timerDropdown">
-              <button id="timerToggle" class="dropdown-toggle" aria-expanded="false">30s ▾</button>
+              <button id="timerToggle" class="dropdown-toggle header-btn" aria-expanded="false">30s ▾</button>
               <div id="timerMenu" class="dropdown-menu" aria-hidden="true">
                 <div class="dropdown-header">Timer</div>
                 <ul id="timerList" class="dropdown-list">
@@ -46,7 +51,7 @@
             <!-- Mode control moved into Settings (see Settings menu) -->
             <!-- settings moved to header-right far right for better layout -->
             <div class="control-inline">
-              <button id="instructionsBtn" class="dropdown-toggle" aria-haspopup="dialog" aria-controls="instructionsModal">Instructions</button>
+              <button id="instructionsBtn" class="dropdown-toggle header-btn" aria-haspopup="dialog" aria-controls="instructionsModal">Instructions</button>
             </div>
             <!-- startBtn moved to the left panel under Hint/Reveal -->
           </div>
@@ -55,11 +60,11 @@
         <!-- theme/control moved into Settings dropdown -->
         <div class="settings-container">
           <div class="dropdown settings-dropdown" id="settingsDropdown">
-            <button id="settingsToggle" class="dropdown-toggle settings-toggle" aria-expanded="false"><span class="settings-icon" aria-hidden="true">⚙️</span> Settings ▾</button>
+            <button id="settingsToggle" class="dropdown-toggle settings-toggle header-btn" aria-expanded="false"><span class="settings-icon" aria-hidden="true">⚙️</span> Settings ▾</button>
             <div id="settingsMenu" class="dropdown-menu" aria-hidden="true">
               <div class="dropdown-header">Settings</div>
               <div class="dropdown-list settings-list" role="menu">
-                <div class="settings-item"><button id="modeToggle" class="dropdown-toggle" aria-pressed="false">Tournament: Off</button></div>
+                <div class="settings-item"><!-- Tournament moved to header --> </div>
                 <div class="settings-item"><button id="scoreboardToggle" class="dropdown-toggle" aria-pressed="true">Show Scoreboard: On</button></div>
                 <div class="settings-item"><button id="autoToggle" class="dropdown-toggle" aria-pressed="false">Auto Advance: Off</button></div>
                 <div class="settings-item"><button id="hintsToggle" class="dropdown-toggle" aria-pressed="false">Hints: All</button></div>
